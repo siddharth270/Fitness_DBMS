@@ -3,7 +3,7 @@ import json
 from config import get_db_connection
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Needed for flashing error messages
+app.secret_key = 'supersecretkey'  
 
 # --- ROUTE: Home Page ---
 @app.route('/')
@@ -18,7 +18,7 @@ def members():
     if conn:
         try:
             with conn.cursor() as cursor:
-                # Based on your PDF schema: Member table has member_id, name, email, etc.
+
                 sql = "SELECT member_id, name, email, status FROM Member"
                 cursor.execute(sql)
                 members_data = cursor.fetchall()
@@ -40,10 +40,10 @@ def add_member():
         if conn:
             try:
                 with conn.cursor() as cursor:
-                    # Execute SQL Insert
+
                     sql = "INSERT INTO Member (name, email, password, join_date, status) VALUES (%s, %s, %s, CURDATE(), 'Active')"
                     cursor.execute(sql, (name, email, password))
-                conn.commit() # Save changes
+                conn.commit()
                 flash('Member added successfully!')
             except Exception as e:
                 conn.rollback()
@@ -61,7 +61,7 @@ def create_plan():
     if conn:
         try:
             with conn.cursor() as cursor:
-                # Fetch all exercises to populate the dropdown/list
+
                 cursor.execute("SELECT * FROM Exercise ORDER BY name ASC")
                 exercises = cursor.fetchall()
         finally:
@@ -72,22 +72,22 @@ def create_plan():
 @app.route('/save_plan', methods=['POST'])
 def save_plan():
     if request.method == 'POST':
-        data = request.get_json() # Get data sent from JavaScript
+        data = request.get_json() 
         
         plan_name = data.get('plan_name')
-        member_id = 1  # Hardcoded for demo (In real app, use session['user_id'])
-        exercises = data.get('exercises') # List of {id, sets, reps}
+        member_id = 1  
+        exercises = data.get('exercises') 
 
         conn = get_db_connection()
         if conn:
             try:
                 with conn.cursor() as cursor:
-                    # 1. Create the Plan Header
+
                     sql_plan = "INSERT INTO Workout_Plan (member_id, plan_name) VALUES (%s, %s)"
                     cursor.execute(sql_plan, (member_id, plan_name))
-                    new_plan_id = cursor.lastrowid # Get the ID of the plan we just made
+                    new_plan_id = cursor.lastrowid 
                     
-                    # 2. Add each Exercise to the plan
+
                     sql_details = "INSERT INTO Plan_Exercise (plan_id, exercise_id, sets, reps) VALUES (%s, %s, %s, %s)"
                     for ex in exercises:
                         cursor.execute(sql_details, (new_plan_id, ex['id'], ex['sets'], ex['reps']))
