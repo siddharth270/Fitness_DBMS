@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Member Management</h2>
+
+<div class="card p-3 mb-4">
+    <h4>Add New Member</h4>
+    <form action="/add_member" method="POST">
+        <div class="row">
+            <div class="col"><input type="text" name="name" class="form-control" placeholder="Full Name" required></div>
+            <div class="col"><input type="email" name="email" class="form-control" placeholder="Email" required></div>
+            <div class="col"><input type="password" name="password" class="form-control" placeholder="Password" required></div>
+            <div class="col"><button type="submit" class="btn btn-success">Add Member</button></div>
+        </div>
+    </form>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for member in members %}
+        <tr>
+            <td>{{ member.member_id }}</td>
+            <td>{{ member.name }}</td>
+            <td>{{ member.email }}</td>
+            <td>{{ member.status }}</td>
+            <td>
+                <button class="btn btn-sm btn-danger">Delete</button>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5">No members found in database.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

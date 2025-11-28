@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-5">
+        <div class="card p-3">
+            <h4>Select Exercises</h4>
+            <input type="text" id="searchBox" class="form-control mb-2" placeholder="Search exercises..." onkeyup="filterExercises()">
+            
+            <div style="height: 400px; overflow-y: scroll; border: 1px solid #ddd;">
+                <ul class="list-group" id="exerciseList">
+                    {% for ex in exercises %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center exercise-item">
+                        <div>
+                            <strong>{{ ex.name }}</strong><br>
+                            <small class="text-muted">{{ ex.target_muscle }} | {{ ex.difficulty }}</small>
+                        </div>
+                        <button class="btn btn-sm btn-primary" onclick="addToPlan('{{ ex.exercise_id }}', '{{ ex.name }}')">+</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="card p-3">
+            <h4>New Workout Plan</h4>
+            <div class="mb-3">
+                <label>Plan Name</label>
+                <input type="text" id="planName" class="form-control" placeholder="e.g., Monday Chest Day">
+            </div>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Exercise</th>
+                        <th width="80">Sets</th>
+                        <th width="80">Reps</th>
+                        <th width="50"></th>
+                    </tr>
+                </thead>
+                <tbody id="planTableBody">
+                    </tbody>
+            </table>
+
+            <button class="btn btn-success w-100" onclick="submitPlan()">Save Workout Plan</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Filter List
+    function filterExercises() {
+        let input = document.getElementById("searchBox").value.toUpperCase();
+        let items = document.getElementsByClassName("exercise-item");
+        for (let i = 0; i < items.length; i++) {
+            let text = items[i].innerText.toUpperCase();
+            items[i].style.display = text.indexOf(input) > -1 ? "" : "none";
+        }
+    }
+
+    // 2. Add to Table
+    let selectedExercises = [];
+    
+    function addToPlan(id, name) {
+        // Prevent duplicates
+        if (selectedExercises.find(e => e.id === id)) return;
+
+        selectedExercises.push({ id: id, name: name });
+        
+        let row = `
+            <tr id="row-${id}">
+                <td>${name}</td>
+                <td><input type="number" class="form-control form-control-sm sets-input" value="3"></td>
+                <td><input type="number" class="form-control form-control-sm reps-input" value="10"></td>
+                <td><button class="btn btn-sm btn-danger" onclick="remove('${id}')">x</button></td>
+            </tr>
+        `;
+        document.getElementById("planTableBody").insertAdjacentHTML('beforeend', row);
+    }
+
+    function remove(id) {
+        selectedExercises = selectedExercises.filter(e => e.id !== id);
+        document.getElementById(`row-${id}`).remove();
+    }
+
+    // 3. Submit to Backend
+    function submitPlan() {
+        let planName = document.getElementById("planName").value;
+        if(!planName) { alert("Please name your plan"); return; }
+        if(selectedExercises.length === 0) { alert("Add exercises first"); return; }
+
+        // Gather Reps/Sets from inputs
+        let payload = selectedExercises.map(ex => {
+            let row = document.getElementById(`row-${ex.id}`);
+            return {
+                id: ex.id,
+                sets: row.querySelector('.sets-input').value,
+                reps: row.querySelector('.reps-input').value
+            };
+        });
+
+        fetch('/save_plan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ plan_name: planName, exercises: payload })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success') {
+                alert("Plan Saved!");
+                window.location.href = "/"; // Redirect home
+            } else {
+                alert("Error: " + data.message);
+            }
+        });
+    }
+</script>
+{% endblock %}
