@@ -66,7 +66,7 @@ WSGI_APPLICATION = 'gym_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gym_management',
+        'NAME': 'gym_db',  # Updated to match your database name
         'USER': 'root',
         'PASSWORD': 'khushi@2908',  # Add your MySQL password here if you have one
         'HOST': 'localhost',

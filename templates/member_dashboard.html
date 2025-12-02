@@ -70,7 +70,7 @@
                                 <p><strong>Email:</strong> {{ member.email }}</p>
                             </div>
                             <div class="col-md-4">
-                                <p><strong>Gym:</strong> {{ member.gym.gym_name }}</p>
+                                <p><strong>Gym:</strong> {% if membership %}{{ membership.gym.gym_name }}{% else %}No active membership{% endif %}</p>
                             </div>
                             <div class="col-md-4">
                                 <p><strong>Member Since:</strong> {{ member.join_date|date:"M d, Y" }}</p>

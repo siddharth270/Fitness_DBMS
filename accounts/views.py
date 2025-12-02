@@ -63,8 +63,12 @@ def member_dashboard(request):
     member_id = request.session.get('user_id')
     member = Member.objects.get(member_id=member_id)
     
+    # Get active membership to display gym info
+    membership = member.get_active_membership()
+    
     context = {
         'member': member,
+        'membership': membership,
     }
     return render(request, 'member_dashboard.html', context)
 
@@ -77,7 +81,7 @@ def trainer_dashboard(request):
         return redirect('trainer_login')
     
     trainer_id = request.session.get('user_id')
-    trainer = Trainer.objects.get(trainer_id=trainer_id)
+    trainer = Trainer.objects.select_related('gym').get(trainer_id=trainer_id)
     
     context = {
         'trainer': trainer,
