@@ -3,7 +3,7 @@ Django>=4.2,<5.0
 
 # MySQL Database Connectors
 PyMySQL>=1.1.0
-mysqlclient>=2.2.0
+
 
 # Excel/Data Processing (for importing fitness_data.xlsx)
 pandas>=2.0.0
@@ -24,3 +24,5 @@ django-debug-toolbar>=4.2.0
 
 # Date/Time Utilities
 python-dateutil>=2.8.0
+
+cryptography
