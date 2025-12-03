@@ -31,7 +31,7 @@ def workout_list(request):
     member_id = request.session.get('user_id')
     
     # Call stored procedure: get_member_workout_history(member_id, limit)
-    workouts_data = call_procedure('get_member_workout_history', [member_id, 20])
+    workouts_data = call_procedure('get_member_recent_workouts', [member_id, 20])
     
     workouts = []
     for row in workouts_data:
@@ -45,15 +45,16 @@ def workout_list(request):
         })
     
     # Call stored functions for stats
-    total_workouts = call_function('get_member_workout_count', [member_id]) or 0
-    total_calories = call_function('get_total_calories_burned', [member_id]) or 0
-    avg_duration = call_function('get_avg_workout_duration', [member_id]) or 0
+    total_workouts = call_procedure('get_member_total_workouts', [member_id]) or 0
+    total_calories = call_procedure('get_member_total_calories', [member_id]) or 0
+    # avg_duration = call_function('get_avg_workout_duration', [member_id]) or 0
     
     context = {
         'workouts': workouts,
         'total_workouts': total_workouts,
         'total_calories': total_calories,
-        'avg_duration': round(avg_duration, 1),
+        # 'avg_duration': round(avg_duration, 1),
+        'avg_duration': 5,
     }
     
     return render(request, 'workouts/workout_list.html', context)
