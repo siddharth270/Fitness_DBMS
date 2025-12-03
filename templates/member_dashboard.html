@@ -4,47 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Member Dashboard - Gym Management System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #667eea;
-        }
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-    </style>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 </head>
-<body>
+<body class="dashboard">
     <!-- Navbar -->
-    <nav class="navbar navbar-dark mb-4">
-        <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1">💪 Gym Management System</span>
-            <div class="d-flex align-items-center text-white">
-                <span class="me-3">Welcome, {{ member.name }}!</span>
-                <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">Logout</a>
+    <nav class="navbar navbar-member">
+        <div class="container">
+            <div class="navbar-content">
+                <span class="navbar-brand">💪 Gym Management System</span>
+                <div class="navbar-right">
+                    <span class="navbar-text">Welcome, {{ member.name }}!</span>
+                    <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -52,83 +25,64 @@
     <div class="container">
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                <div class="alert alert-{{ message.tags }}">
                     {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="close" onclick="this.parentElement.remove()">×</button>
                 </div>
             {% endfor %}
         {% endif %}
 
         <!-- Member Info -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title mb-3">Your Profile</h4>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <p><strong>Email:</strong> {{ member.email }}</p>
-                            </div>
-                            <div class="col-md-4">
-                                <p><strong>Gym:</strong> {% if membership %}{{ membership.gym.gym_name }}{% else %}No active membership{% endif %}</p>
-                            </div>
-                            <div class="col-md-4">
-                                <p><strong>Member Since:</strong> {{ member.join_date|date:"M d, Y" }}</p>
-                            </div>
-                        </div>
-                    </div>
+        <div class="profile-card">
+            <h4 class="card-title">Your Profile</h4>
+            <div class="profile-row">
+                <div class="profile-item">
+                    <span class="profile-label">Email:</span>
+                    <span class="profile-value">{{ member.email }}</span>
+                </div>
+                <div class="profile-item">
+                    <span class="profile-label">Gym:</span>
+                    <span class="profile-value">{% if membership %}{{ membership.gym.gym_name }}{% else %}No active membership{% endif %}</span>
+                </div>
+                <div class="profile-item">
+                    <span class="profile-label">Member Since:</span>
+                    <span class="profile-value">{{ member.join_date|date:"M d, Y" }}</span>
                 </div>
             </div>
         </div>
 
         <!-- Quick Stats -->
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="stat-card text-center">
-                    <div class="stat-number">0</div>
-                    <div class="text-muted">Total Workouts</div>
-                </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Total Workouts</div>
             </div>
-            <div class="col-md-4">
-                <div class="stat-card text-center">
-                    <div class="stat-number">0</div>
-                    <div class="text-muted">Upcoming Appointments</div>
-                </div>
+            <div class="stat-card">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Upcoming Appointments</div>
             </div>
-            <div class="col-md-4">
-                <div class="stat-card text-center">
-                    <div class="stat-number">0</div>
-                    <div class="text-muted">Active Plans</div>
-                </div>
+            <div class="stat-card">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Active Plans</div>
             </div>
         </div>
 
         <!-- Main Features -->
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="card text-center">
-                    <div class="card-body p-4">
-                        <div class="feature-icon">🏃</div>
-                        <h5 class="card-title">My Workouts</h5>
-                        <p class="card-text text-muted">Log and track your workout sessions</p>
-                        <a href="#" class="btn btn-primary">View Workouts</a>
-                    </div>
-                </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🏃</div>
+                <h5 class="feature-title">My Workouts</h5>
+                <p class="feature-description">Log and track your workout sessions</p>
+                <a href="{% url 'workout_list' %}" class="btn btn-primary">View Workouts</a>
             </div>
             
-            <div class="col-md-6 mb-4">
-                <div class="card text-center">
-                    <div class="card-body p-4">
-                        <div class="feature-icon">📅</div>
-                        <h5 class="card-title">Appointments</h5>
-                        <p class="card-text text-muted">Book and manage trainer appointments</p>
-                        <a href="#" class="btn btn-primary">Manage Appointments</a>
-                    </div>
-                </div>
+            <div class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h5 class="feature-title">Appointments</h5>
+                <p class="feature-description">Book and manage trainer appointments</p>
+                <a href="#" class="btn btn-primary">Manage Appointments</a>
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

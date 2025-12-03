@@ -6,7 +6,7 @@ class Command(BaseCommand):
     help = 'Creates test users for development (uses existing gyms from database)'
 
     def handle(self, *args, **kwargs):
-        # Use existing gyms from the database
+
         try:
             gym = Gym.objects.first()
             if not gym:
@@ -18,7 +18,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR(f'Error accessing gym: {e}'))
             return
         
-        # Create test members
+
         members_data = [
             {
                 'name': 'John Doe Test',
@@ -57,7 +57,7 @@ class Command(BaseCommand):
                 member.set_password(member_data['password'])
                 member.save()
                 
-                # Create membership
+
                 Membership.objects.create(
                     member_id=member.member_id,
                     gym_id=gym.gym_id,
@@ -71,7 +71,7 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(self.style.WARNING(f'Member already exists: {email}'))
         
-        # Create test trainers
+
         trainers_data = [
             {
                 'name': 'Mike Johnson Test',

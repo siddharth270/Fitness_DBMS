@@ -1,17 +1,13 @@
-"""
-Django settings for gym_project project.
-"""
-
 from pathlib import Path
 import os
 
-# Build paths inside the project
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY = 'django-insecure-replace-this-with-your-own-secret-key-in-production'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -66,9 +62,9 @@ WSGI_APPLICATION = 'gym_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gym_db',  # Updated to match your database name
+        'NAME': 'gym_db', 
         'USER': 'root',
-        'PASSWORD': 'khushi@2908',  # Add your MySQL password here if you have one
+        'PASSWORD': 'khushi@2908',  
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {

@@ -5,7 +5,7 @@ class Command(BaseCommand):
     help = 'Hashes plain text passwords for existing users in the database'
 
     def handle(self, *args, **kwargs):
-        # Hash member passwords
+
         members = Member.objects.all()
         member_fixed = 0
         member_already_hashed = 0
@@ -13,13 +13,13 @@ class Command(BaseCommand):
         self.stdout.write(self.style.WARNING('\n=== Processing Member Passwords ==='))
         
         for member in members:
-            # Check if password is already hashed
+
             if not member.password.startswith('pbkdf2_sha256'):
-                old_password = member.password  # Store the plain text password
-                member.set_password(old_password)  # Hash it
+                old_password = member.password 
+                member.set_password(old_password)
                 member.save()
                 
-                # Verify it worked
+
                 if member.check_password(old_password):
                     member_fixed += 1
                     self.stdout.write(self.style.SUCCESS(
@@ -35,7 +35,7 @@ class Command(BaseCommand):
                     f'⏭️  Already hashed: {member.name} ({member.email})'
                 ))
         
-        # Hash trainer passwords
+
         trainers = Trainer.objects.all()
         trainer_fixed = 0
         trainer_already_hashed = 0
@@ -43,13 +43,13 @@ class Command(BaseCommand):
         self.stdout.write(self.style.WARNING('\n=== Processing Trainer Passwords ==='))
         
         for trainer in trainers:
-            # Check if password is already hashed
+
             if not trainer.password.startswith('pbkdf2_sha256'):
-                old_password = trainer.password  # Store the plain text password
-                trainer.set_password(old_password)  # Hash it
+                old_password = trainer.password 
+                trainer.set_password(old_password)
                 trainer.save()
                 
-                # Verify it worked
+
                 if trainer.check_password(old_password):
                     trainer_fixed += 1
                     self.stdout.write(self.style.SUCCESS(
@@ -65,7 +65,7 @@ class Command(BaseCommand):
                     f'⏭️  Already hashed: {trainer.name} ({trainer.email})'
                 ))
         
-        # Summary
+
         self.stdout.write(self.style.SUCCESS(f'\n=== Summary ==='))
         self.stdout.write(f'Members - Total: {members.count()}, Fixed: {member_fixed}, Already hashed: {member_already_hashed}')
         self.stdout.write(f'Trainers - Total: {trainers.count()}, Fixed: {trainer_fixed}, Already hashed: {trainer_already_hashed}')

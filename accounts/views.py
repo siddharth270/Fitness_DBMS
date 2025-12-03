@@ -16,7 +16,7 @@ def member_login(request):
         try:
             member = Member.objects.get(email=email)
             if member.check_password(password):
-                # Store member info in session
+
                 request.session['user_id'] = member.member_id
                 request.session['user_type'] = 'member'
                 request.session['user_name'] = member.name
@@ -39,7 +39,7 @@ def trainer_login(request):
         try:
             trainer = Trainer.objects.get(email=email)
             if trainer.check_password(password):
-                # Store trainer info in session
+
                 request.session['user_id'] = trainer.trainer_id
                 request.session['user_type'] = 'trainer'
                 request.session['user_name'] = trainer.name
@@ -55,7 +55,7 @@ def trainer_login(request):
 
 def member_dashboard(request):
     """Member dashboard view"""
-    # Check if user is logged in as member
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
@@ -63,7 +63,7 @@ def member_dashboard(request):
     member_id = request.session.get('user_id')
     member = Member.objects.get(member_id=member_id)
     
-    # Get active membership to display gym info
+
     membership = member.get_active_membership()
     
     context = {
@@ -75,7 +75,7 @@ def member_dashboard(request):
 
 def trainer_dashboard(request):
     """Trainer dashboard view"""
-    # Check if user is logged in as trainer
+
     if request.session.get('user_type') != 'trainer':
         messages.error(request, 'Please log in as a trainer')
         return redirect('trainer_login')

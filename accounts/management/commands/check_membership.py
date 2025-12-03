@@ -8,7 +8,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         self.stdout.write(self.style.WARNING('\n=== Checking Memberships ===\n'))
         
-        # Check total memberships using raw SQL
+
         with connection.cursor() as cursor:
             cursor.execute("SELECT COUNT(*) FROM Membership")
             total_memberships = cursor.fetchone()[0]
@@ -19,12 +19,12 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR('\n❌ No memberships found! Did you run the INSERT statements for Membership table?'))
             return
         
-        # Check John Smith specifically
+
         try:
             john = Member.objects.get(email='john.smith@email.com')
             self.stdout.write(self.style.SUCCESS(f'\n✅ Found John Smith (member_id: {john.member_id})'))
             
-            # Get John's memberships using raw SQL
+
             with connection.cursor() as cursor:
                 cursor.execute("""
                     SELECT m.member_id, m.gym_id, m.start_date, m.end_date, m.status, m.cost,
@@ -46,14 +46,14 @@ class Command(BaseCommand):
                     self.stdout.write(f'    - End: {end_date}')
                     self.stdout.write(f'    - Cost: ${cost}')
             
-            # Test the get_active_membership method
+
             active = john.get_active_membership()
             if active:
                 self.stdout.write(self.style.SUCCESS(f'\n✅ get_active_membership() returned: {active.gym.gym_name}'))
             else:
                 self.stdout.write(self.style.ERROR(f'\n❌ get_active_membership() returned None'))
                 
-                # Check status values
+
                 self.stdout.write(self.style.WARNING(f'\nChecking all unique status values in Membership table:'))
                 with connection.cursor() as cursor:
                     cursor.execute("SELECT DISTINCT status, COUNT(*) FROM Membership GROUP BY status")
@@ -64,7 +64,7 @@ class Command(BaseCommand):
         except Member.DoesNotExist:
             self.stdout.write(self.style.ERROR('\n❌ John Smith not found!'))
         
-        # Show first 10 memberships
+
         self.stdout.write(self.style.WARNING(f'\n=== First 10 Memberships ==='))
         with connection.cursor() as cursor:
             cursor.execute("""

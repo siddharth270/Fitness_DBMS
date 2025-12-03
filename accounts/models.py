@@ -10,8 +10,7 @@ class Gym(models.Model):
     
     class Meta:
         db_table = 'Gym'
-        managed = False  # Don't let Django manage this table
-    
+        managed = False 
     def __str__(self):
         return self.gym_name
 
@@ -29,7 +28,7 @@ class Member(models.Model):
     
     class Meta:
         db_table = 'Member'
-        managed = False  # Don't let Django manage this table
+        managed = False  
     
     def set_password(self, raw_password):
         self.password = make_password(raw_password)
@@ -38,7 +37,7 @@ class Member(models.Model):
         return check_password(raw_password, self.password)
     
     def save(self, *args, **kwargs):
-        # Auto-hash password if it's not already hashed
+
         if self.password and not self.password.startswith('pbkdf2_sha256'):
             self.password = make_password(self.password)
         super().save(*args, **kwargs)
@@ -59,7 +58,7 @@ class Member(models.Model):
                 
                 row = cursor.fetchone()
                 if row:
-                    # Create a simple membership object
+
                     membership = type('Membership', (), {
                         'member_id': row[0],
                         'gym_id': row[1],
@@ -95,7 +94,7 @@ class Trainer(models.Model):
     
     class Meta:
         db_table = 'Trainer'
-        managed = False  # Don't let Django manage this table
+        managed = False  
     
     def set_password(self, raw_password):
         self.password = make_password(raw_password)
@@ -104,7 +103,7 @@ class Trainer(models.Model):
         return check_password(raw_password, self.password)
     
     def save(self, *args, **kwargs):
-        # Auto-hash password if it's not already hashed
+
         if self.password and not self.password.startswith('pbkdf2_sha256'):
             self.password = make_password(self.password)
         super().save(*args, **kwargs)
@@ -114,7 +113,7 @@ class Trainer(models.Model):
 
 
 class Membership(models.Model):
-    # Don't define primary_key - let Django handle it
+
     member_id = models.IntegerField()
     gym_id = models.IntegerField()
     start_date = models.DateField()

@@ -14,7 +14,7 @@ class Command(BaseCommand):
         
         self.stdout.write(self.style.WARNING(f'\n=== Debugging Login for {email} ===\n'))
         
-        # Check if member exists
+
         try:
             member = Member.objects.get(email=email)
             self.stdout.write(self.style.SUCCESS(f'✅ Member found!'))
@@ -24,7 +24,7 @@ class Command(BaseCommand):
             self.stdout.write(f'   Hash length: {len(member.password)}')
             self.stdout.write(f'   Starts with pbkdf2?: {member.password.startswith("pbkdf2_sha256")}')
             
-            # Test password
+
             self.stdout.write(f'\n🔐 Testing password: "{password}"')
             result = member.check_password(password)
             
@@ -34,11 +34,11 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(f'❌ PASSWORD INCORRECT!'))
                 self.stdout.write(self.style.WARNING(f'\nTrying to fix it...'))
                 
-                # Try to set the password
+
                 member.set_password(password)
                 member.save()
                 
-                # Test again
+
                 result2 = member.check_password(password)
                 if result2:
                     self.stdout.write(self.style.SUCCESS(f'✅ Password fixed! Try logging in now.'))
@@ -50,7 +50,7 @@ class Command(BaseCommand):
         except Member.DoesNotExist:
             self.stdout.write(self.style.WARNING(f'⚠️  Not found as Member, checking Trainers...'))
         
-        # Check if trainer exists
+
         try:
             trainer = Trainer.objects.get(email=email)
             self.stdout.write(self.style.SUCCESS(f'✅ Trainer found!'))
@@ -58,7 +58,7 @@ class Command(BaseCommand):
             self.stdout.write(f'   Email: {trainer.email}')
             self.stdout.write(f'   Password hash: {trainer.password[:50]}...')
             
-            # Test password
+
             self.stdout.write(f'\n🔐 Testing password: "{password}"')
             result = trainer.check_password(password)
             
@@ -68,11 +68,11 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(f'❌ PASSWORD INCORRECT!'))
                 self.stdout.write(self.style.WARNING(f'\nTrying to fix it...'))
                 
-                # Try to set the password
+
                 trainer.set_password(password)
                 trainer.save()
                 
-                # Test again
+
                 result2 = trainer.check_password(password)
                 if result2:
                     self.stdout.write(self.style.SUCCESS(f'✅ Password fixed! Try logging in now.'))
@@ -84,7 +84,7 @@ class Command(BaseCommand):
         except Trainer.DoesNotExist:
             self.stdout.write(self.style.ERROR(f'❌ User not found as Member or Trainer!'))
             
-            # Show all members
+
             self.stdout.write(f'\n📋 All members in database:')
             for m in Member.objects.all()[:10]:
                 self.stdout.write(f'   - {m.email}')

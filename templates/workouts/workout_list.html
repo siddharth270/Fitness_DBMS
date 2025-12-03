@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Workouts - Gym Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body class="dashboard">
+    <!-- Navbar -->
+    <nav class="navbar navbar-member">
+        <div class="container">
+            <div class="navbar-content">
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <div class="navbar-right">
+                    <a href="{% url 'member_dashboard' %}" class="text-white">Dashboard</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button type="button" class="close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>My Workouts</h2>
+                <a href="{% url 'new_workout' %}" class="btn btn-primary">+ Start New Workout</a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_workouts }}</div>
+                <div class="stat-label">Total Workouts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ total_calories }}</div>
+                <div class="stat-label">Calories Burned</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ avg_duration }}</div>
+                <div class="stat-label">Avg Duration (min)</div>
+            </div>
+        </div>
+
+        <!-- Workout History -->
+        <div class="card">
+            <h4 class="card-title">Workout History</h4>
+            
+            {% if workouts %}
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #e0e0e0;">
+                                <th style="padding: 12px; text-align: left;">Date</th>
+                                <th style="padding: 12px; text-align: left;">Gym</th>
+                                <th style="padding: 12px; text-align: center;">Exercises</th>
+                                <th style="padding: 12px; text-align: center;">Duration</th>
+                                <th style="padding: 12px; text-align: center;">Calories</th>
+                                <th style="padding: 12px; text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for workout in workouts %}
+                            <tr style="border-bottom: 1px solid #f0f0f0;">
+                                <td style="padding: 12px;">{{ workout.date|date:"M d, Y" }}</td>
+                                <td style="padding: 12px;">{{ workout.gym_name }}</td>
+                                <td style="padding: 12px; text-align: center;">{{ workout.exercise_count }}</td>
+                                <td style="padding: 12px; text-align: center;">{{ workout.duration|default:"—" }} min</td>
+                                <td style="padding: 12px; text-align: center;">{{ workout.calories_burned|default:"—" }}</td>
+                                <td style="padding: 12px; text-align: right;">
+                                    <a href="{% url 'workout_detail' workout.workout_id %}" class="btn btn-primary btn-sm">View Details</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center p-5">
+                    <p class="text-muted mb-3">No workouts logged yet</p>
+                    <a href="{% url 'new_workout' %}" class="btn btn-primary">Start Your First Workout</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
