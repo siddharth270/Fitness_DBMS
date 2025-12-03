@@ -1,3 +1,5 @@
+DROP DATABASE IF EXISTS gym_db; 
+
 CREATE DATABASE IF NOT EXISTS gym_db; 
 
 USE gym_db; 
