@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Workout - Gym Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body class="dashboard">
+    <!-- Navbar -->
+    <nav class="navbar navbar-member">
+        <div class="container">
+            <div class="navbar-content">
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <div class="navbar-right">
+                    <span class="text-white">🏁 Finishing Workout</span>
+                    <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 700px;">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button type="button" class="close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="card text-center" style="margin-top: 50px;">
+            <div class="feature-icon">🎉</div>
+            <h2 class="mb-3">Great Work!</h2>
+            <p class="text-muted mb-4">You're about to complete your workout</p>
+
+            <!-- Workout Summary -->
+            <div class="stats-grid" style="margin-bottom: 32px;">
+                <div class="stat-card">
+                    <div class="stat-number">{{ exercise_count }}</div>
+                    <div class="stat-label">Exercises</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ set_count }}</div>
+                    <div class="stat-label">Total Sets</div>
+                </div>
+            </div>
+
+            <!-- Completion Form -->
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group" style="text-align: left;">
+                    <label for="duration" class="form-label">Workout Duration (minutes) *</label>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="duration" 
+                        name="duration" 
+                        min="1" 
+                        required
+                        placeholder="e.g., 60">
+                </div>
+
+                <div class="form-group" style="text-align: left;">
+                    <label for="calories" class="form-label">Estimated Calories Burned</label>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="calories" 
+                        name="calories" 
+                        min="0"
+                        placeholder="e.g., 450 (optional)">
+                    <small class="text-muted">Tip: Average is 5-10 calories per minute of strength training</small>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 32px;">
+                    <a href="{% url 'add_exercise' %}" class="btn btn-outline" style="flex: 1; text-align: center; padding: 14px;">
+                        ← Add More Exercises
+                    </a>
+                    <button type="submit" class="btn btn-primary" style="flex: 2; padding: 14px; font-size: 16px;">
+                        ✅ Complete Workout
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Auto-calculate calories based on duration
+        document.getElementById('duration').addEventListener('input', function() {
+            const duration = parseInt(this.value) || 0;
+            const estimatedCalories = Math.round(duration * 7.5); // 7.5 cal/min average
+            document.getElementById('calories').placeholder = `Suggested: ${estimatedCalories} calories`;
+        });
+    </script>
+</body>
+</html>

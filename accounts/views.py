@@ -1,17 +1,17 @@
-from django.db import connection
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.db import connection
 from .models import Member, Trainer
-
-def login_select(request):
-    """Landing page to select login type"""
-    return render(request, 'login_select.html')
 
 def call_procedure(procedure_name, params=[]):
     """Helper function to call stored procedures"""
     with connection.cursor() as cursor:
         cursor.callproc(procedure_name, params)
         return cursor.fetchall()
+
+def login_select(request):
+    """Landing page to select login type"""
+    return render(request, 'login_select.html')
 
 
 def member_login(request):
@@ -23,7 +23,7 @@ def member_login(request):
         try:
             member = Member.objects.get(email=email)
             if member.check_password(password):
-
+                # Store member info in session
                 request.session['user_id'] = member.member_id
                 request.session['user_type'] = 'member'
                 request.session['user_name'] = member.name
@@ -46,7 +46,7 @@ def trainer_login(request):
         try:
             trainer = Trainer.objects.get(email=email)
             if trainer.check_password(password):
-
+                # Store trainer info in session
                 request.session['user_id'] = trainer.trainer_id
                 request.session['user_type'] = 'trainer'
                 request.session['user_name'] = trainer.name
@@ -60,26 +60,6 @@ def trainer_login(request):
     return render(request, 'trainer_login.html')
 
 
-# def member_dashboard(request):
-#     """Member dashboard view"""
-
-#     if request.session.get('user_type') != 'member':
-#         messages.error(request, 'Please log in as a member')
-#         return redirect('member_login')
-    
-#     member_id = request.session.get('user_id')
-#     member = Member.objects.get(member_id=member_id)
-    
-
-#     membership = member.get_active_membership()
-    
-#     context = {
-#         'member': member,
-#         'membership': membership,
-#     }
-#     return render(request, 'member_dashboard.html', context)
-
-
 def member_dashboard(request):
     """Member dashboard view"""
     # Check if user is logged in as member
@@ -91,23 +71,26 @@ def member_dashboard(request):
     member = Member.objects.get(member_id=member_id)
     
     # Call procedure: get_member_total_workouts(member_id)
+    # Returns: member_id, name, total_workouts_completed
     workout_data = call_procedure('get_member_total_workouts', [member_id])
-    total_workouts = workout_data[0][2] if workout_data and len(workout_data[0]) > 2 else 0
+    total_workouts = workout_data[0][2] if workout_data else 0
     
     # Call procedure: get_member_total_calories(member_id)
+    # Returns: member_id, name, total_calories_burned
     calories_data = call_procedure('get_member_total_calories', [member_id])
-    total_calories = calories_data[0][2] if calories_data and len(calories_data[0]) > 2 else 0
+    total_calories = int(calories_data[0][2]) if calories_data else 0
     
     # Call procedure: get_member_active_plans_count(member_id)
+    # Returns: member_id, name, number_of_active_workout_plans
     plans_data = call_procedure('get_member_active_plans_count', [member_id])
-    active_plans = plans_data[0][2] if plans_data and len(plans_data[0]) > 2 else 0
+    active_plans = plans_data[0][2] if plans_data else 0
     
     # Call procedure: get_member_active_gym(member_id)
+    # Returns: member_id, member_name, gym_id, gym_name, location, membership_status, start_date, end_date, days_remaining
     gym_data = call_procedure('get_member_active_gym', [member_id])
     
     membership = None
     if gym_data:
-        # Create a simple object to hold gym data
         membership = type('Membership', (), {
             'gym': type('Gym', (), {
                 'gym_id': gym_data[0][2],
@@ -129,10 +112,9 @@ def member_dashboard(request):
     return render(request, 'member_dashboard.html', context)
 
 
-
 def trainer_dashboard(request):
     """Trainer dashboard view"""
-
+    # Check if user is logged in as trainer
     if request.session.get('user_type') != 'trainer':
         messages.error(request, 'Please log in as a trainer')
         return redirect('trainer_login')
@@ -140,8 +122,26 @@ def trainer_dashboard(request):
     trainer_id = request.session.get('user_id')
     trainer = Trainer.objects.select_related('gym').get(trainer_id=trainer_id)
     
+    # Call procedure: get_trainer_total_clients(trainer_id)
+    # Returns: trainer_id, trainer_name, specialization, total_clients
+    clients_data = call_procedure('get_trainer_total_clients', [trainer_id])
+    total_clients = clients_data[0][3] if clients_data else 0
+    
+    # Call procedure: get_trainer_scheduled_appointments_count(trainer_id)
+    # Returns: trainer_id, trainer_name, scheduled_appointments_count
+    appointments_data = call_procedure('get_trainer_scheduled_appointments_count', [trainer_id])
+    scheduled_appointments = appointments_data[0][2] if appointments_data else 0
+    
+    # Call procedure: get_trainer_workout_plans_count(trainer_id)
+    # Returns: trainer_id, trainer_name, specialization, workout_plans_created
+    plans_data = call_procedure('get_trainer_workout_plans_count', [trainer_id])
+    workout_plans_created = plans_data[0][3] if plans_data else 0
+    
     context = {
         'trainer': trainer,
+        'total_clients': total_clients,
+        'scheduled_appointments': scheduled_appointments,
+        'workout_plans_created': workout_plans_created,
     }
     return render(request, 'trainer_dashboard.html', context)
 

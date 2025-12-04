@@ -54,15 +54,15 @@
         <!-- Quick Stats -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number">0</div>
+                <div class="stat-number">{{ total_clients }}</div>
                 <div class="stat-label">Total Clients</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">0</div>
-                <div class="stat-label">Today's Appointments</div>
+                <div class="stat-number">{{ scheduled_appointments }}</div>
+                <div class="stat-label">Upcoming Appointments</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">0</div>
+                <div class="stat-number">{{ workout_plans_created }}</div>
                 <div class="stat-label">Active Plans Created</div>
             </div>
         </div>

@@ -42,44 +42,7 @@ class Member(models.Model):
             self.password = make_password(self.password)
         super().save(*args, **kwargs)
     
-    def get_active_membership(self):
-        """Get the member's active membership"""
-        try:
-            from django.db import connection
-            with connection.cursor() as cursor:
-                cursor.execute("""
-                    SELECT m.member_id, m.gym_id, m.start_date, m.end_date, m.status, m.cost,
-                           g.gym_id, g.gym_name, g.location, g.contact_number, g.email
-                    FROM Membership m
-                    JOIN Gym g ON m.gym_id = g.gym_id
-                    WHERE m.member_id = %s AND m.status = %s
-                    LIMIT 1
-                """, [self.member_id, 'Active'])
-                
-                row = cursor.fetchone()
-                if row:
 
-                    membership = type('Membership', (), {
-                        'member_id': row[0],
-                        'gym_id': row[1],
-                        'start_date': row[2],
-                        'end_date': row[3],
-                        'status': row[4],
-                        'cost': row[5],
-                        'gym': type('Gym', (), {
-                            'gym_id': row[6],
-                            'gym_name': row[7],
-                            'location': row[8],
-                            'contact_number': row[9],
-                            'email': row[10]
-                        })()
-                    })()
-                    return membership
-            return None
-        except Exception as e:
-            print(f"Error getting membership: {e}")
-            return None
-    
     def __str__(self):
         return self.name
 

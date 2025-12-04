@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Set - Gym Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <style>
+        .exercise-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        .history-table th,
+        .history-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .history-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        .quick-weight {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .quick-weight-btn {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .quick-weight-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <!-- Navbar -->
+    <nav class="navbar navbar-member">
+        <div class="container">
+            <div class="navbar-content">
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <div class="navbar-right">
+                    <span class="text-white">🏃 Logging Set</span>
+                    <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 800px;">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button type="button" class="close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Exercise Header -->
+        <div class="exercise-header">
+            <h1 style="margin-bottom: 8px;">{{ exercise.name }}</h1>
+            <p style="opacity: 0.9; margin: 0;">{{ exercise.category }} • {{ exercise.target_muscle_group }}</p>
+        </div>
+
+        <!-- Log Set Form -->
+        <div class="card">
+            <h3 class="card-title">Log Your Set</h3>
+            
+            <form method="POST" id="setForm">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="reps" class="form-label">Reps Performed *</label>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="reps" 
+                        name="reps" 
+                        min="1" 
+                        required
+                        placeholder="e.g., 10">
+                </div>
+
+                <div class="form-group">
+                    <label for="weight" class="form-label">Weight (lbs)</label>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="weight" 
+                        name="weight" 
+                        min="0" 
+                        step="2.5"
+                        placeholder="e.g., 135.0 (leave blank for bodyweight)">
+                    
+                    <div class="quick-weight">
+                        <span style="font-size: 14px; color: #666; width: 100%;">Quick select:</span>
+                        <button type="button" class="quick-weight-btn" onclick="setWeight(0)">Bodyweight</button>
+                        <button type="button" class="quick-weight-btn" onclick="setWeight(25)">25 lbs</button>
+                        <button type="button" class="quick-weight-btn" onclick="setWeight(45)">45 lbs</button>
+                        <button type="button" class="quick-weight-btn" onclick="setWeight(95)">95 lbs</button>
+                        <button type="button" class="quick-weight-btn" onclick="setWeight(135)">135 lbs</button>
+                        <button type="button" class="quick-weight-btn" onclick="setWeight(185)">185 lbs</button>
+                        <button type="button" class="quick-weight-btn" onclick="setWeight(225)">225 lbs</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <a href="{% url 'add_exercise' %}" class="btn btn-outline" style="flex: 1; text-align: center; padding: 12px;">Cancel</a>
+                    <button type="submit" class="btn btn-primary" style="flex: 2; padding: 12px;">✅ Log Set</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Previous Performance -->
+        {% if previous_sets %}
+        <div class="card">
+            <h4 class="card-title">📊 Your Previous Performance</h4>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Reps</th>
+                        <th>Weight</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for set in previous_sets %}
+                    <tr>
+                        <td>{{ set.date|date:"M d, Y" }}</td>
+                        <td>{{ set.reps }}</td>
+                        <td>{% if set.weight %}{{ set.weight }} lbs{% else %}Bodyweight{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function setWeight(weight) {
+            document.getElementById('weight').value = weight;
+        }
+    </script>
+</body>
+</html>
