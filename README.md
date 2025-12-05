@@ -1,6 +1,10 @@
 # Fitness_DBMS
 Fitness Application
 
+### Data Dump Initialization
+- Make sure to run the whole dump using MySQL Workbench.
+
+
 ### Install Dependencies
 - Create a virtual environment and use the belo command to download the dependencies.
 
