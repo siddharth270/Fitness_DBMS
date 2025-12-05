@@ -56,14 +56,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'gym_project.wsgi.application'
 
-username = input("Enter your database username: ")
-password = input("Enter your database password: ")
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'gym_db', 
-        'USER': username,
-        'PASSWORD': password,  
+        'USER': os.environ.get('DB_USER', 'root'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),  
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {

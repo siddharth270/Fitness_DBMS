@@ -2,11 +2,23 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import getpass
 
 
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gym_project.settings')
+
+    db_commands = ['runserver', 'migrate', 'start', 'create_test_users', 'hash_passwords']
+    
+
+    needs_credentials = any(cmd in sys.argv for cmd in db_commands)
+    
+    if needs_credentials and 'DB_USER' not in os.environ:
+        username = input("Enter your database username: ")
+        password = getpass.getpass("Enter your database password: ")
+        os.environ['DB_USER'] = username
+        os.environ['DB_PASSWORD'] = password
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
