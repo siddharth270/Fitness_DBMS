@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Exercise - Gym Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <style>
+        .search-container {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .search-input-wrapper {
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 16px 20px;
+            padding-left: 48px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            border-color: #667eea;
+        }
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+        }
+        .filters-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .filter-select {
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            background: white;
+        }
+        .filter-select:focus {
+            border-color: #667eea;
+        }
+        .search-btn {
+            padding: 14px;
+            font-size: 16px;
+        }
+        .results-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .results-header {
+            padding: 16px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 600;
+            color: #333;
+        }
+        .exercise-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+        .exercise-item:hover {
+            background: #f8f9fa;
+        }
+        .exercise-item:last-child {
+            border-bottom: none;
+        }
+        .exercise-info h4 {
+            margin: 0 0 4px;
+            font-size: 16px;
+            color: #333;
+        }
+        .exercise-info .meta {
+            font-size: 13px;
+            color: #666;
+        }
+        .add-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .add-btn:hover {
+            background: #5a6fd6;
+        }
+        .no-results {
+            padding: 40px 20px;
+            text-align: center;
+            color: #666;
+        }
+        .search-tip {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        .search-tip-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <nav class="navbar navbar-member">
+        <div class="container">
+            <div class="navbar-content">
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <div class="navbar-right">
+                    <span class="text-white">🔍 Find Exercise</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 700px;">
+        <a href="{% url 'active_workout' %}" class="back-link">← Back to Workout</a>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button type="button" class="close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Search Form -->
+        <div class="search-container">
+            <h2 style="margin: 0 0 20px; text-align: center;">Add Exercise</h2>
+            
+            <form method="GET" class="search-form">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input 
+                        type="text" 
+                        name="search" 
+                        class="search-input" 
+                        placeholder="Search exercises (e.g., Bench Press, Squat...)"
+                        value="{{ search_query }}"
+                        autofocus>
+                </div>
+                
+                <div class="filters-row">
+                    <select name="category" class="filter-select">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat }}" {% if cat == category_filter %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <select name="muscle_group" class="filter-select">
+                        <option value="">All Muscle Groups</option>
+                        {% for mg in muscle_groups %}
+                            <option value="{{ mg }}" {% if mg == muscle_group_filter %}selected{% endif %}>{{ mg }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <input type="hidden" name="show_results" value="1">
+                <button type="submit" class="btn btn-primary search-btn">Search Exercises</button>
+            </form>
+        </div>
+
+        <!-- Results -->
+        {% if show_results %}
+            <div class="results-container">
+                <div class="results-header">
+                    {% if exercises %}
+                        Found {{ exercises|length }} exercise{{ exercises|length|pluralize }}
+                    {% else %}
+                        No results found
+                    {% endif %}
+                </div>
+                
+                {% if exercises %}
+                    {% for exercise in exercises %}
+                    <div class="exercise-item">
+                        <div class="exercise-info">
+                            <h4>{{ exercise.name }}</h4>
+                            <div class="meta">{{ exercise.category }} • {{ exercise.muscle_group }}</div>
+                        </div>
+                        <a href="{% url 'add_exercise_to_workout' exercise.exercise_id %}" class="add-btn">+ Add</a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-results">
+                        <p>No exercises match your search.</p>
+                        <p>Try different keywords or filters.</p>
+                    </div>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="card">
+                <div class="search-tip">
+                    <div class="search-tip-icon">💡</div>
+                    <h3>Search for Exercises</h3>
+                    <p>Enter a keyword or use the filters above, then click Search to find exercises.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

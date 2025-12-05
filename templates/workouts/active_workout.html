@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Workout - Gym Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <style>
+        .workout-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .workout-timer {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .action-buttons .btn {
+            flex: 1;
+            padding: 16px;
+            font-size: 16px;
+            text-align: center;
+        }
+        .exercise-card {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .exercise-header {
+            background: #f8f9fa;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .exercise-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        .exercise-meta {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+        .sets-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .sets-table th {
+            padding: 12px 16px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            background: #fafafa;
+        }
+        .sets-table th:first-child {
+            text-align: left;
+            padding-left: 20px;
+        }
+        .sets-table td {
+            padding: 14px 16px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 15px;
+        }
+        .sets-table td:first-child {
+            text-align: left;
+            padding-left: 20px;
+        }
+        .set-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .set-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-icon.delete {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        .btn-icon.delete:hover {
+            background: #d32f2f;
+            color: white;
+        }
+        .exercise-footer {
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+        .add-set-btn {
+            width: 100%;
+            padding: 12px;
+            background: none;
+            border: 2px dashed #667eea;
+            color: #667eea;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .add-set-btn:hover {
+            background: #667eea;
+            color: white;
+            border-style: solid;
+        }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 16px 20px;
+            background: #f0f4ff;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        .btn-finish {
+            background: #28a745;
+        }
+        .btn-finish:hover {
+            background: #218838;
+        }
+        .btn-cancel-workout {
+            background: none;
+            border: 2px solid #dc3545;
+            color: #dc3545;
+        }
+        .btn-cancel-workout:hover {
+            background: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <nav class="navbar navbar-member">
+        <div class="container">
+            <div class="navbar-content">
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <div class="navbar-right">
+                    <span class="text-white">🏋️ Workout in Progress</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button type="button" class="close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Workout Header -->
+        <div class="workout-header">
+            <div>
+                <h2 style="margin: 0;">Today's Workout</h2>
+                {% if plan_name %}
+                <p style="margin: 4px 0 0; opacity: 0.9;">📋 {{ plan_name }}</p>
+                {% else %}
+                <p style="margin: 4px 0 0; opacity: 0.9;">{{ "now"|date:"l, F d" }}</p>
+                {% endif %}
+            </div>
+            <div class="workout-timer" id="timer">00:00:00</div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="{% url 'search_exercises' %}" class="btn btn-primary">+ Add Exercise</a>
+            <a href="{% url 'finish_workout' %}" class="btn btn-finish">✓ Finish Workout</a>
+        </div>
+
+        <!-- Exercises List -->
+        {% if exercises or plan_exercises %}
+            {% for exercise in exercises %}
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <div>
+                        <h3 class="exercise-name">{{ exercise.name }}</h3>
+                        <div class="exercise-meta">
+                            {{ exercise.category }} • {{ exercise.muscle_group }}
+                            {% if exercise.from_plan and exercise.target_sets %}
+                            <span style="margin-left: 8px; color: #667eea;">Target: {{ exercise.target_sets }}×{{ exercise.target_reps }} @ {{ exercise.target_weight }}lbs</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <a href="{% url 'log_set' exercise.exercise_id %}" class="btn btn-primary btn-sm">+ Set</a>
+                </div>
+                
+                {% if exercise.sets %}
+                <table class="sets-table">
+                    <thead>
+                        <tr>
+                            <th>Set</th>
+                            <th>Weight (lbs)</th>
+                            <th>Reps</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for set in exercise.sets %}
+                        <tr>
+                            <td><span class="set-number">{{ set.set_number }}</span></td>
+                            <td>{% if set.weight %}{{ set.weight }}{% else %}—{% endif %}</td>
+                            <td>{{ set.reps }}</td>
+                            <td>
+                                <div class="set-actions">
+                                    <form method="POST" action="{% url 'delete_set' set.set_id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-icon delete" title="Delete set">🗑</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-value">{{ exercise.total_weight|floatformat:0 }}</div>
+                        <div class="stat-label">Total Volume</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ exercise.total_reps }}</div>
+                        <div class="stat-label">Total Reps</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ exercise.avg_weight }}</div>
+                        <div class="stat-label">Avg Weight</div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="exercise-footer">
+                    <a href="{% url 'log_set' exercise.exercise_id %}" class="add-set-btn">+ Add Set</a>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Plan exercises not yet started -->
+            {% if plan_exercises %}
+            <div style="margin-top: 32px; margin-bottom: 16px;">
+                <h3 style="color: #666; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">📋 Remaining from Plan</h3>
+            </div>
+            {% for exercise in plan_exercises %}
+            <div class="exercise-card" style="border-left: 4px solid #667eea; opacity: 0.85;">
+                <div class="exercise-header" style="background: #f0f4ff;">
+                    <div>
+                        <h3 class="exercise-name">{{ exercise.name }}</h3>
+                        <div class="exercise-meta">
+                            {{ exercise.category }} • {{ exercise.muscle_group }}
+                        </div>
+                        <div style="margin-top: 8px;">
+                            <span style="background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 13px;">
+                                Target: {{ exercise.target_sets }} sets × {{ exercise.target_reps }} reps @ {{ exercise.target_weight }}lbs
+                            </span>
+                        </div>
+                    </div>
+                    <a href="{% url 'log_set' exercise.exercise_id %}" class="btn btn-primary btn-sm">Start</a>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        {% else %}
+            <div class="card">
+                <div class="empty-state">
+                    <div class="empty-icon">🏋️</div>
+                    <h3>No Exercises Yet</h3>
+                    <p class="text-muted mb-4">Add your first exercise to start logging sets</p>
+                    <a href="{% url 'search_exercises' %}" class="btn btn-primary" style="padding: 14px 32px;">+ Add Exercise</a>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Cancel Workout -->
+        <div style="margin-top: 32px; text-align: center;">
+            <form method="POST" action="{% url 'cancel_workout' %}" onsubmit="return confirm('Are you sure you want to cancel this workout? All progress will be lost.');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-cancel-workout">Cancel Workout</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Workout Timer
+        let startTime = new Date();
+        
+        function updateTimer() {
+            const now = new Date();
+            const diff = Math.floor((now - startTime) / 1000);
+            
+            const hours = Math.floor(diff / 3600);
+            const minutes = Math.floor((diff % 3600) / 60);
+            const seconds = diff % 60;
+            
+            document.getElementById('timer').textContent = 
+                String(hours).padStart(2, '0') + ':' +
+                String(minutes).padStart(2, '0') + ':' +
+                String(seconds).padStart(2, '0');
+        }
+        
+        setInterval(updateTimer, 1000);
+        updateTimer();
+    </script>
+</body>
+</html>

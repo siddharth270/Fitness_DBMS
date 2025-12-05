@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log Set - Gym Management System</title>
+    <title>{{ exercise.exercise_name }} - Log Set</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
@@ -11,62 +11,208 @@
         .exercise-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 32px;
+            padding: 24px;
             border-radius: 12px;
             margin-bottom: 24px;
             text-align: center;
         }
-        .history-table {
+        .exercise-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 8px;
+        }
+        .exercise-subtitle {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .sets-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        .sets-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 16px;
         }
-        .history-table th,
-        .history-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .history-table th {
-            background: #f8f9fa;
+        .sets-table th {
+            padding: 14px 16px;
+            text-align: center;
+            font-size: 12px;
             font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .sets-table th:first-child {
+            text-align: left;
+            padding-left: 20px;
+        }
+        .sets-table td {
+            padding: 16px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 16px;
+        }
+        .sets-table td:first-child {
+            text-align: left;
+            padding-left: 20px;
+        }
+        .set-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .set-number.warmup {
+            background: #ffc107;
+            color: #333;
+        }
+        .add-set-form {
+            padding: 20px;
+            background: #f0f4ff;
+            border-top: 2px solid #667eea;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 60px 1fr 1fr 100px;
+            gap: 12px;
+            align-items: center;
+        }
+        .form-input {
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus {
+            border-color: #667eea;
+        }
+        .new-set-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #28a745;
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .save-btn {
+            padding: 14px 24px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .save-btn:hover {
+            background: #218838;
         }
         .quick-weight {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
-            margin-top: 8px;
+            padding: 16px 20px;
+            background: #fafafa;
         }
-        .quick-weight-btn {
-            padding: 8px 16px;
+        .quick-btn {
+            padding: 10px 16px;
             border: 2px solid #667eea;
             background: white;
             color: #667eea;
-            border-radius: 6px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
         }
-        .quick-weight-btn:hover {
+        .quick-btn:hover, .quick-btn.active {
             background: #667eea;
+            color: white;
+        }
+        .history-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .history-header {
+            padding: 16px 20px;
+            background: #f8f9fa;
+            font-weight: 600;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        .no-sets {
+            padding: 24px 20px;
+            text-align: center;
+            color: #666;
+        }
+        .delete-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: #ffebee;
+            color: #d32f2f;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .delete-btn:hover {
+            background: #d32f2f;
             color: white;
         }
     </style>
 </head>
 <body class="dashboard">
-    <!-- Navbar -->
     <nav class="navbar navbar-member">
         <div class="container">
             <div class="navbar-content">
                 <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
                 <div class="navbar-right">
-                    <span class="text-white">🏃 Logging Set</span>
-                    <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
+                    <span class="text-white">📝 Log Set</span>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div class="container" style="max-width: 800px;">
+    <div class="container" style="max-width: 600px;">
+        <a href="{% url 'active_workout' %}" class="back-link">← Back to Workout</a>
+
         {% if messages %}
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }}">
@@ -78,88 +224,91 @@
 
         <!-- Exercise Header -->
         <div class="exercise-header">
-            <h1 style="margin-bottom: 8px;">{{ exercise.name }}</h1>
-            <p style="opacity: 0.9; margin: 0;">{{ exercise.category }} • {{ exercise.target_muscle_group }}</p>
+            <h1 class="exercise-title">{{ exercise.exercise_name }}</h1>
+            <p class="exercise-subtitle">{{ exercise.category }} • {{ exercise.target_muscle_group }}</p>
         </div>
 
-        <!-- Log Set Form -->
-        <div class="card">
-            <h3 class="card-title">Log Your Set</h3>
-            
-            <form method="POST" id="setForm">
+        <!-- Current Sets -->
+        <div class="sets-card">
+            <table class="sets-table">
+                <thead>
+                    <tr>
+                        <th>Set</th>
+                        <th>Weight (lbs)</th>
+                        <th>Reps</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if existing_sets %}
+                        {% for set in existing_sets %}
+                        <tr>
+                            <td><span class="set-number">{{ set.set_number }}</span></td>
+                            <td>{% if set.weight %}{{ set.weight }}{% else %}—{% endif %}</td>
+                            <td>{{ set.reps }}</td>
+                            <td>
+                                <form method="POST" action="{% url 'delete_set' set.set_id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="delete-btn">🗑</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="no-sets">No sets logged yet</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+            <!-- Add New Set Form -->
+            <form method="POST" class="add-set-form">
                 {% csrf_token %}
-                
-                <div class="form-group">
-                    <label for="reps" class="form-label">Reps Performed *</label>
-                    <input 
-                        type="number" 
-                        class="form-control" 
-                        id="reps" 
-                        name="reps" 
-                        min="1" 
-                        required
-                        placeholder="e.g., 10">
-                </div>
-
-                <div class="form-group">
-                    <label for="weight" class="form-label">Weight (lbs)</label>
-                    <input 
-                        type="number" 
-                        class="form-control" 
-                        id="weight" 
-                        name="weight" 
-                        min="0" 
-                        step="2.5"
-                        placeholder="e.g., 135.0 (leave blank for bodyweight)">
-                    
-                    <div class="quick-weight">
-                        <span style="font-size: 14px; color: #666; width: 100%;">Quick select:</span>
-                        <button type="button" class="quick-weight-btn" onclick="setWeight(0)">Bodyweight</button>
-                        <button type="button" class="quick-weight-btn" onclick="setWeight(25)">25 lbs</button>
-                        <button type="button" class="quick-weight-btn" onclick="setWeight(45)">45 lbs</button>
-                        <button type="button" class="quick-weight-btn" onclick="setWeight(95)">95 lbs</button>
-                        <button type="button" class="quick-weight-btn" onclick="setWeight(135)">135 lbs</button>
-                        <button type="button" class="quick-weight-btn" onclick="setWeight(185)">185 lbs</button>
-                        <button type="button" class="quick-weight-btn" onclick="setWeight(225)">225 lbs</button>
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 12px; margin-top: 24px;">
-                    <a href="{% url 'add_exercise' %}" class="btn btn-outline" style="flex: 1; text-align: center; padding: 12px;">Cancel</a>
-                    <button type="submit" class="btn btn-primary" style="flex: 2; padding: 12px;">✅ Log Set</button>
+                <div class="form-row">
+                    <span class="new-set-indicator">{{ next_set_number }}</span>
+                    <input type="number" name="weight" id="weight" class="form-input" placeholder="Weight" min="0" step="2.5">
+                    <input type="number" name="reps" id="reps" class="form-input" placeholder="Reps" min="1" required>
+                    <button type="submit" class="save-btn">✓ Save</button>
                 </div>
             </form>
+
+            <!-- Quick Weight Buttons -->
+            <div class="quick-weight">
+                <span style="font-size: 13px; color: #666; margin-right: 8px;">Quick:</span>
+                <button type="button" class="quick-btn" onclick="setWeight(0)">BW</button>
+                <button type="button" class="quick-btn" onclick="setWeight(45)">45</button>
+                <button type="button" class="quick-btn" onclick="setWeight(95)">95</button>
+                <button type="button" class="quick-btn" onclick="setWeight(135)">135</button>
+                <button type="button" class="quick-btn" onclick="setWeight(185)">185</button>
+                <button type="button" class="quick-btn" onclick="setWeight(225)">225</button>
+            </div>
         </div>
 
         <!-- Previous Performance -->
         {% if previous_sets %}
-        <div class="card">
-            <h4 class="card-title">📊 Your Previous Performance</h4>
-            <table class="history-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Reps</th>
-                        <th>Weight</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for set in previous_sets %}
-                    <tr>
-                        <td>{{ set.date|date:"M d, Y" }}</td>
-                        <td>{{ set.reps }}</td>
-                        <td>{% if set.weight %}{{ set.weight }} lbs{% else %}Bodyweight{% endif %}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="history-card">
+            <div class="history-header">📊 Previous Performance</div>
+            {% for set in previous_sets %}
+            <div class="history-item">
+                <span>{{ set.date|date:"M d, Y" }}</span>
+                <span>{{ set.reps }} reps × {% if set.weight %}{{ set.weight }} lbs{% else %}BW{% endif %}</span>
+            </div>
+            {% endfor %}
         </div>
         {% endif %}
+
+        <div style="margin-top: 24px; text-align: center;">
+            <a href="{% url 'active_workout' %}" class="btn btn-primary" style="padding: 14px 32px;">Done with {{ exercise.exercise_name }}</a>
+        </div>
     </div>
 
     <script>
         function setWeight(weight) {
             document.getElementById('weight').value = weight;
+            // Visual feedback
+            document.querySelectorAll('.quick-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
         }
     </script>
 </body>
