@@ -129,3 +129,226 @@ BEGIN
     END IF;
 END $$
 DELIMITER ;
+
+-- Delete workout and all its sets (for canceling a workout)
+DELIMITER $$
+CREATE PROCEDURE cancel_workout_session(
+    IN p_workout_id INT,
+    IN p_member_id INT
+)
+BEGIN
+    DECLARE v_valid INT DEFAULT 0;
+    
+    -- Verify the member owns this workout
+    SELECT COUNT(*) INTO v_valid
+    FROM Workout
+    WHERE workout_id = p_workout_id AND member_id = p_member_id;
+    
+    IF v_valid > 0 THEN
+        -- Delete all sets first
+        DELETE FROM `Set` WHERE workout_id = p_workout_id;
+        
+        -- Delete the workout
+        DELETE FROM Workout WHERE workout_id = p_workout_id AND member_id = p_member_id;
+        
+        SELECT 'CANCEL SUCCESS' AS result, 'Workout cancelled and deleted' AS message;
+    ELSE
+        SELECT 'CANCEL FAILED' AS result, 'Workout not found or unauthorized' AS message;
+    END IF;
+END $$
+DELIMITER ;
+
+
+-- Get all distinct exercise categories
+DELIMITER $$
+CREATE PROCEDURE get_all_exercise_categories()
+BEGIN
+    SELECT DISTINCT category 
+    FROM Exercise 
+    ORDER BY category;
+END $$
+DELIMITER ;
+
+-- Get all distinct muscle groups
+DELIMITER $$
+CREATE PROCEDURE get_all_muscle_groups()
+BEGIN
+    SELECT DISTINCT target_muscle_group 
+    FROM Exercise 
+    WHERE target_muscle_group IS NOT NULL 
+    ORDER BY target_muscle_group;
+END $$
+DELIMITER ;
+
+
+-- 1. Get all sets for a workout grouped by exercise (for displaying the workout page)
+DELIMITER $$
+CREATE PROCEDURE get_workout_exercise_sets(
+    IN p_workout_id INT
+)
+BEGIN
+    SELECT 
+        e.exercise_id,
+        e.exercise_name,
+        e.category,
+        e.target_muscle_group,
+        s.set_id,
+        s.no_of_reps,
+        s.weight,
+        ROW_NUMBER() OVER (PARTITION BY e.exercise_id ORDER BY s.set_id) AS set_number
+    FROM `Set` s
+    JOIN Exercise e ON s.exercise_id = e.exercise_id
+    WHERE s.workout_id = p_workout_id
+    ORDER BY s.set_id;
+END $$
+DELIMITER ;
+
+-- 2. Delete a set from workout
+DELIMITER $$
+CREATE PROCEDURE delete_set_from_workout(
+    IN p_set_id INT,
+    IN p_workout_id INT
+)
+BEGIN
+    DECLARE v_deleted INT DEFAULT 0;
+    
+    DELETE FROM `Set`
+    WHERE set_id = p_set_id AND workout_id = p_workout_id;
+    
+    SET v_deleted = ROW_COUNT();
+    
+    IF v_deleted > 0 THEN
+        SELECT 'DELETE SUCCESS' AS result, p_set_id AS deleted_set_id;
+    ELSE
+        SELECT 'DELETE FAILED' AS result, 'Set not found or unauthorized' AS message;
+    END IF;
+END $$
+DELIMITER ;
+
+-- 3. Update a set
+DELIMITER $$
+CREATE PROCEDURE update_set_in_workout(
+    IN p_set_id INT,
+    IN p_workout_id INT,
+    IN p_reps INT,
+    IN p_weight DECIMAL(5,2)
+)
+BEGIN
+    DECLARE v_updated INT DEFAULT 0;
+    
+    UPDATE `Set`
+    SET no_of_reps = p_reps, weight = p_weight
+    WHERE set_id = p_set_id AND workout_id = p_workout_id;
+    
+    SET v_updated = ROW_COUNT();
+    
+    IF v_updated > 0 THEN
+        SELECT 'UPDATE SUCCESS' AS result, p_set_id AS updated_set_id;
+    ELSE
+        SELECT 'UPDATE FAILED' AS result, 'Set not found or unauthorized' AS message;
+    END IF;
+END $$
+DELIMITER ;
+
+-- 4. Complete workout (update duration and calories)
+DELIMITER $$
+CREATE PROCEDURE complete_workout_session(
+    IN p_workout_id INT,
+    IN p_duration INT,
+    IN p_calories INT
+)
+BEGIN
+    UPDATE Workout
+    SET duration = p_duration, calories_burned = p_calories
+    WHERE workout_id = p_workout_id;
+    
+    SELECT 
+        'WORKOUT COMPLETED' AS result,
+        p_workout_id AS workout_id,
+        p_duration AS duration,
+        p_calories AS calories_burned;
+END $$
+DELIMITER ;
+
+-- 5. Get workout stats (for finish workout summary)
+DELIMITER $$
+CREATE PROCEDURE get_workout_stats(
+    IN p_workout_id INT
+)
+BEGIN
+    SELECT 
+        COUNT(DISTINCT s.exercise_id) AS exercise_count,
+        COUNT(s.set_id) AS total_sets,
+        COALESCE(SUM(s.no_of_reps), 0) AS total_reps,
+        COALESCE(SUM(s.weight * s.no_of_reps), 0) AS total_volume
+    FROM `Set` s
+    WHERE s.workout_id = p_workout_id;
+END $$
+DELIMITER ;
+
+
+
+
+-- Start a workout from a plan
+DELIMITER $$
+CREATE PROCEDURE start_workout_from_plan(
+    IN p_member_id INT,
+    IN p_plan_id INT,
+    IN p_gym_id INT,
+    IN p_date DATE
+)
+BEGIN
+    DECLARE v_workout_id INT;
+    
+    -- Create the workout linked to the plan
+    INSERT INTO Workout (member_id, gym_id, plan_id, date, duration, calories_burned)
+    VALUES (p_member_id, p_gym_id, p_plan_id, p_date, NULL, NULL);
+    
+    SET v_workout_id = LAST_INSERT_ID();
+    
+    SELECT 
+        v_workout_id AS workout_id,
+        'WORKOUT STARTED' AS result,
+        p_plan_id AS plan_id;
+END $$
+DELIMITER ;
+
+-- Get exercises from a plan (simple list for active workout)
+DELIMITER $$
+CREATE PROCEDURE get_plan_exercise_list(
+    IN p_plan_id INT
+)
+BEGIN
+    SELECT 
+        pe.exercise_id,
+        e.exercise_name,
+        e.category,
+        e.target_muscle_group,
+        pe.target_sets,
+        pe.target_reps,
+        pe.target_weight
+    FROM Plan_Exercise pe
+    JOIN Exercise e ON pe.exercise_id = e.exercise_id
+    WHERE pe.plan_id = p_plan_id
+    ORDER BY pe.plan_exercise_id;
+END $$
+DELIMITER ;
+
+-- Get workout info including plan_id
+DELIMITER $$
+CREATE PROCEDURE get_workout_info(
+    IN p_workout_id INT
+)
+BEGIN
+    SELECT 
+        w.workout_id,
+        w.member_id,
+        w.gym_id,
+        w.plan_id,
+        w.date,
+        wp.plan_name
+    FROM Workout w
+    LEFT JOIN Workout_Plan wp ON w.plan_id = wp.plan_id
+    WHERE w.workout_id = p_workout_id;
+END $$
+DELIMITER ;
