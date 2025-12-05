@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Appointments - Gym Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <style>
+        .appointment-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .appointment-card.completed {
+            border-left-color: #28a745;
+            opacity: 0.8;
+        }
+        .appointment-card.cancelled {
+            border-left-color: #dc3545;
+            opacity: 0.8;
+        }
+        .appointment-card.upcoming {
+            border-left-color: #667eea;
+        }
+        .appointment-info h4 {
+            margin: 0 0 8px 0;
+            color: #333;
+        }
+        .appointment-meta {
+            font-size: 14px;
+            color: #666;
+            margin: 4px 0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .status-upcoming {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        .status-completed {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        .status-cancelled {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <!-- Navbar -->
+    <nav class="navbar navbar-member">
+        <div class="container">
+            <div class="navbar-content">
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <div class="navbar-right">
+                    <a href="{% url 'workout_list' %}" class="text-white">Workouts</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button type="button" class="close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2>My Appointments</h2>
+                    <p class="text-muted">Manage your training sessions with personal trainers</p>
+                </div>
+                <a href="{% url 'book_appointment' %}" class="btn btn-primary">+ Book New Appointment</a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ upcoming_count }}</div>
+                <div class="stat-label">Upcoming Appointments</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ appointments|length }}</div>
+                <div class="stat-label">Total Appointments</div>
+            </div>
+        </div>
+
+        <!-- Appointments List -->
+        {% if appointments %}
+            <div class="card">
+                <h4 class="card-title">All Appointments</h4>
+                
+                {% for appointment in appointments %}
+                <div class="appointment-card {{ appointment.state|lower }}">
+                    <div class="appointment-info">
+                        <h4>
+                            {{ appointment.trainer_name }}
+                            <span class="status-badge status-{{ appointment.state|lower }}">
+                                {{ appointment.state }}
+                            </span>
+                        </h4>
+                        <div class="appointment-meta">
+                            💼 {{ appointment.specialization }}
+                        </div>
+                        <div class="appointment-meta">
+                            📅 {{ appointment.start_time|date:"F d, Y" }} at {{ appointment.start_time|time:"g:i A" }}
+                        </div>
+                        <div class="appointment-meta">
+                            ⏱️ {{ appointment.start_time|time:"g:i A" }} - {{ appointment.end_time|time:"g:i A" }}
+                        </div>
+                        <div class="appointment-meta">
+                            📍 {{ appointment.gym_name }}
+                        </div>
+                    </div>
+                    <div>
+                        {% if appointment.state == 'Upcoming' %}
+                            <a href="{% url 'trainer_detail' appointment.trainer_id %}" class="btn btn-primary btn-sm" style="margin-right: 8px;">View Trainer</a>
+                            <form method="POST" action="{% url 'cancel_appointment' appointment.appointment_id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline btn-sm" style="color: #dc3545; border-color: #dc3545;">Cancel</button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'trainer_detail' appointment.trainer_id %}" class="btn btn-primary btn-sm">View Trainer</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📅</div>
+                    <h3>No Appointments Yet</h3>
+                    <p class="text-muted mb-4">Book your first training session with a personal trainer</p>
+                    <a href="{% url 'book_appointment' %}" class="btn btn-primary">Book an Appointment</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Schedule - Gym Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <style>
+        .schedule-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            border-left: 4px solid #667eea;
+        }
+        .schedule-card.in-progress {
+            border-left-color: #ffc107;
+            background: #fffbf0;
+        }
+        .schedule-card.completed {
+            border-left-color: #28a745;
+            opacity: 0.7;
+        }
+        .schedule-card.missed {
+            border-left-color: #dc3545;
+            opacity: 0.7;
+        }
+        .time-block {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f5576c;
+            margin-bottom: 8px;
+        }
+        .date-picker {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <!-- Navbar -->
+    <nav class="navbar navbar-trainer">
+        <div class="container">
+            <div class="navbar-content">
+                <a href="{% url 'trainer_dashboard' %}" class="navbar-brand">🏋️ Gym Management System</a>
+                <div class="navbar-right">
+                    <a href="{% url 'trainer_appointments' %}" class="text-white">Appointments</a>
+                    <a href="{% url 'trainer_clients' %}" class="text-white">Clients</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button type="button" class="close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="dashboard-header">
+            <h2>Daily Schedule</h2>
+            <p class="text-muted">View your appointments for the day</p>
+        </div>
+
+        <!-- Date Picker -->
+        <div class="card">
+            <form method="GET" class="date-picker">
+                <label for="date" style="font-weight: 600;">Select Date:</label>
+                <input type="date" id="date" name="date" class="form-control" value="{{ selected_date }}" style="max-width: 200px;">
+                <button type="submit" class="btn btn-primary">View Schedule</button>
+                <a href="{% url 'trainer_schedule' %}" class="btn btn-outline">Today</a>
+            </form>
+        </div>
+
+        <!-- Schedule -->
+        {% if appointments %}
+            <div class="card">
+                <h4 class="card-title">Appointments for {{ selected_date|date:"F d, Y" }}</h4>
+                
+                {% for appointment in appointments %}
+                <div class="schedule-card {{ appointment.state|lower|cut:' ' }}">
+                    <div class="time-block">
+                        🕐 {{ appointment.start_time_only }} - {{ appointment.end_time_only }}
+                        <span style="font-size: 14px; color: #666; font-weight: normal;">
+                            ({{ appointment.duration_minutes }} minutes)
+                        </span>
+                    </div>
+                    <div class="appointment-meta">
+                        <strong>Client:</strong> {{ appointment.member_name }}
+                    </div>
+                    <div class="appointment-meta">
+                        📧 {{ appointment.member_email }}
+                    </div>
+                    <div class="appointment-meta">
+                        👤 {{ appointment.age }} years old, {{ appointment.gender }}
+                    </div>
+                    <div class="appointment-meta">
+                        📍 {{ appointment.gym_name }}
+                    </div>
+                    <div class="appointment-meta" style="margin-top: 8px;">
+                        <span class="status-badge status-{{ appointment.status|lower }}">
+                            {{ appointment.state }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card">
+                <div class="text-center p-5">
+                    <div style="font-size: 64px; margin-bottom: 16px;">📅</div>
+                    <h3>No Appointments Scheduled</h3>
+                    <p class="text-muted">You have a free day on {{ selected_date|date:"F d, Y" }}</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

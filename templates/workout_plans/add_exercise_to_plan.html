@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Exercise to Plan - Gym Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <style>
+        .exercise-card {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 2px solid #e0e0e0;
+            transition: border-color 0.3s ease;
+        }
+        .exercise-card:hover {
+            border-color: #11998e;
+        }
+        .exercise-form {
+            display: none;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .exercise-card.expanded .exercise-form {
+            display: block;
+        }
+        .target-inputs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <nav class="navbar navbar-trainer">
+        <div class="container">
+            <div class="navbar-content">
+                <a href="{% url 'trainer_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <div class="navbar-right">
+                    <a href="{% url 'trainer_plan_detail' plan_id %}" class="text-white">Back to Plan</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button type="button" class="close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="dashboard-header">
+            <h2>Add Exercise to Plan</h2>
+            <p class="text-muted">Search and select exercises to add with target sets, reps, and weight</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="card">
+            <h4 class="card-title">Search Exercises</h4>
+            <form method="GET">
+                <div class="search-bar">
+                    <input 
+                        type="text" 
+                        name="search" 
+                        class="form-control" 
+                        placeholder="Search exercises..."
+                        value="{{ search_query }}">
+                    <select name="category" class="form-control">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat }}" {% if cat == category_filter %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary">🔍 Search</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Exercise Results -->
+        <div class="card">
+            <h4 class="card-title">Available Exercises ({{ exercises|length }})</h4>
+            
+            {% if exercises %}
+                {% for exercise in exercises %}
+                <div class="exercise-card" id="card-{{ exercise.exercise_id }}">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="margin: 0 0 4px 0;">{{ exercise.name }}</h4>
+                            <div style="font-size: 14px; color: #666;">
+                                📁 {{ exercise.category }} • 💪 {{ exercise.muscle_group }}
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="toggleForm({{ exercise.exercise_id }})">
+                            + Add to Plan
+                        </button>
+                    </div>
+                    
+                    <form method="POST" class="exercise-form" id="form-{{ exercise.exercise_id }}">
+                        {% csrf_token %}
+                        <input type="hidden" name="exercise_id" value="{{ exercise.exercise_id }}">
+                        
+                        <div class="target-inputs">
+                            <div class="form-group">
+                                <label class="form-label">Target Sets</label>
+                                <input type="number" name="target_sets" class="form-control" value="3" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Target Reps</label>
+                                <input type="number" name="target_reps" class="form-control" value="10" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Target Weight (lbs)</label>
+                                <input type="number" name="target_weight" class="form-control" value="0" min="0" step="2.5">
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 12px; margin-top: 16px;">
+                            <button type="button" class="btn btn-outline" onclick="toggleForm({{ exercise.exercise_id }})">Cancel</button>
+                            <button type="submit" class="btn btn-primary">✅ Add Exercise</button>
+                        </div>
+                    </form>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center p-4">
+                    <p class="text-muted">No exercises found. Try a different search term.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'trainer_plan_detail' plan_id %}">← Back to Plan</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleForm(exerciseId) {
+            const card = document.getElementById('card-' + exerciseId);
+            card.classList.toggle('expanded');
+        }
+    </script>
+</body>
+</html>

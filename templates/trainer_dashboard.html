@@ -73,14 +73,21 @@
                 <div class="feature-icon">📅</div>
                 <h5 class="feature-title">Appointments</h5>
                 <p class="feature-description">View and manage client appointments</p>
-                <a href="#" class="btn btn-primary">Manage Appointments</a>
+                <a href="{% url 'trainer_appointments' %}" class="btn btn-primary">Manage Appointments</a>
             </div>
             
             <div class="feature-card">
                 <div class="feature-icon">👥</div>
                 <h5 class="feature-title">My Clients</h5>
                 <p class="feature-description">View client details and progress</p>
-                <a href="#" class="btn btn-primary">View Clients</a>
+                <a href="{% url 'trainer_clients' %}" class="btn btn-primary">View Clients</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h5 class="feature-title">Workout Plans</h5>
+                <p class="feature-description">Create and manage client workout plans</p>
+                <a href="{% url 'trainer_plan_list' %}" class="btn btn-primary">Manage Plans</a>
             </div>
         </div>
     </div>

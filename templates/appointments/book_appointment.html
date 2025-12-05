@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Gym Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <style>
+        .trainer-card {
+            background: white;
+            padding: 24px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .trainer-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        .trainer-card.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        .trainer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .trainer-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        .specialization-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .trainer-meta {
+            font-size: 14px;
+            color: #666;
+            margin: 4px 0;
+        }
+        .booking-section {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            margin-top: 24px;
+            display: none;
+        }
+        .booking-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <!-- Navbar -->
+    <nav class="navbar navbar-member">
+        <div class="container">
+            <div class="navbar-content">
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <div class="navbar-right">
+                    <a href="{% url 'appointment_list' %}" class="text-white">My Appointments</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 900px;">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button type="button" class="close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="dashboard-header">
+            <h2>Book an Appointment</h2>
+            <p class="text-muted">Select a trainer and schedule your training session</p>
+        </div>
+
+        <!-- Step 1: Select Trainer -->
+        <div class="card">
+            <h4 class="card-title">Step 1: Choose Your Trainer</h4>
+            
+            {% if trainers %}
+                {% for trainer in trainers %}
+                <div class="trainer-card" data-trainer-id="{{ trainer.trainer_id }}" data-trainer-name="{{ trainer.name }}" id="trainer-{{ trainer.trainer_id }}">
+                    <div class="trainer-header">
+                        <h4 class="trainer-name">🏋️ {{ trainer.name }}</h4>
+                        <span class="specialization-badge">{{ trainer.specialization }}</span>
+                    </div>
+                    <div class="trainer-meta">
+                        📧 {{ trainer.email }}
+                    </div>
+                    <div class="trainer-meta">
+                        📍 {{ trainer.gym_name }}
+                    </div>
+                    <div class="trainer-meta">
+                        📊 {{ trainer.total_appointments }} total appointment{{ trainer.total_appointments|pluralize }}
+                    </div>
+                    <div style="margin-top: 12px;">
+                        <a href="{% url 'trainer_detail' trainer.trainer_id %}" class="btn btn-outline btn-sm" onclick="event.stopPropagation();">View Profile</a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center p-4">
+                    <p class="text-muted">No trainers available at your gym</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Step 2: Select Date & Time -->
+        <div class="booking-section" id="bookingSection">
+            <h4 style="margin-bottom: 24px;">Step 2: Schedule Your Session with <span id="selectedTrainerName"></span></h4>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="trainer_id" id="selectedTrainerId">
+                
+                <div class="form-group">
+                    <label for="date" class="form-label">Appointment Date *</label>
+                    <input 
+                        type="date" 
+                        class="form-control" 
+                        id="date" 
+                        name="date" 
+                        min="{{ today }}"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="start_time" class="form-label">Start Time *</label>
+                    <select class="form-control" id="start_time" name="start_time" required>
+                        <option value="">Select a time</option>
+                        <option value="06:00">6:00 AM</option>
+                        <option value="07:00">7:00 AM</option>
+                        <option value="08:00">8:00 AM</option>
+                        <option value="09:00">9:00 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="13:00">1:00 PM</option>
+                        <option value="14:00">2:00 PM</option>
+                        <option value="15:00">3:00 PM</option>
+                        <option value="16:00">4:00 PM</option>
+                        <option value="17:00">5:00 PM</option>
+                        <option value="18:00">6:00 PM</option>
+                        <option value="19:00">7:00 PM</option>
+                        <option value="20:00">8:00 PM</option>
+                    </select>
+                    <small class="text-muted">All appointments are 1 hour long</small>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 32px;">
+                    <a href="{% url 'appointment_list' %}" class="btn btn-outline" style="flex: 1; text-align: center; padding: 12px;">Cancel</a>
+                    <button type="submit" class="btn btn-primary" style="flex: 2; padding: 12px;">📅 Book Appointment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date').setAttribute('min', today);
+        document.getElementById('date').value = today;
+
+        // Add click event listeners to all trainer cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const trainerCards = document.querySelectorAll('.trainer-card');
+            
+            trainerCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const trainerId = this.getAttribute('data-trainer-id');
+                    const trainerName = this.getAttribute('data-trainer-name');
+                    
+                    // Remove selected class from all cards
+                    trainerCards.forEach(c => c.classList.remove('selected'));
+                    
+                    // Add selected class to clicked card
+                    this.classList.add('selected');
+                    
+                    // Update hidden input and display name
+                    document.getElementById('selectedTrainerId').value = trainerId;
+                    document.getElementById('selectedTrainerName').textContent = trainerName;
+                    
+                    // Show booking section
+                    document.getElementById('bookingSection').classList.add('active');
+                    
+                    // Scroll to booking section
+                    document.getElementById('bookingSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

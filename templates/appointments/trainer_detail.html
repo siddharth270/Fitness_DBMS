@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trainer Profile - Gym Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <style>
+        .trainer-profile-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .trainer-avatar {
+            font-size: 80px;
+            margin-bottom: 16px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .info-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 16px;
+            border-radius: 8px;
+        }
+        .info-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+        .info-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .time-slot {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <!-- Navbar -->
+    <nav class="navbar navbar-member">
+        <div class="container">
+            <div class="navbar-content">
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <div class="navbar-right">
+                    <a href="{% url 'appointment_list' %}" class="text-white">My Appointments</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 800px;">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button type="button" class="close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Trainer Profile Header -->
+        <div class="trainer-profile-header">
+            <div class="trainer-avatar">🏋️</div>
+            <h1 style="margin-bottom: 8px;">{{ trainer.name }}</h1>
+            <p style="font-size: 18px; opacity: 0.95; margin-bottom: 24px;">{{ trainer.specialization }}</p>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">📧 Email</div>
+                    <div class="info-value" style="font-size: 16px;">{{ trainer.email }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">📍 Location</div>
+                    <div class="info-value" style="font-size: 16px;">{{ trainer.gym.gym_name }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Schedule -->
+        {% if upcoming_appointments %}
+        <div class="card">
+            <h4 class="card-title">📅 Upcoming Schedule</h4>
+            <p class="text-muted mb-3">This trainer's booked slots</p>
+            
+            {% for appointment in upcoming_appointments %}
+            <div class="time-slot">
+                🕐 {{ appointment.start_time|date:"F d, Y" }} at {{ appointment.start_time|time:"g:i A" }} - {{ appointment.end_time|time:"g:i A" }}
+                <span style="color: #dc3545; font-weight: 600; margin-left: 8px;">Booked</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Book Appointment Button -->
+        <div class="card text-center">
+            <h4 class="card-title">Ready to Book?</h4>
+            <p class="text-muted mb-4">Schedule a training session with {{ trainer.name }}</p>
+            <a href="{% url 'book_appointment' %}" class="btn btn-primary" style="padding: 14px 32px;">📅 Book Appointment</a>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'book_appointment' %}">← Back to Trainers</a>
+        </div>
+    </div>
+</body>
+</html>

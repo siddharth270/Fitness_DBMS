@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Plans - Gym Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body class="dashboard">
+    <nav class="navbar navbar-trainer">
+        <div class="container">
+            <div class="navbar-content">
+                <a href="{% url 'trainer_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <div class="navbar-right">
+                    <a href="{% url 'trainer_dashboard' %}" class="text-white">Dashboard</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button type="button" class="close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="dashboard-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2>Workout Plans</h2>
+                    <p class="text-muted">Manage workout plans for your clients</p>
+                </div>
+                <a href="{% url 'create_workout_plan' %}" class="btn btn-primary">+ Create New Plan</a>
+            </div>
+        </div>
+
+        <div class="card">
+            {% if plans %}
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #e0e0e0;">
+                            <th style="padding: 12px; text-align: left;">Plan Name</th>
+                            <th style="padding: 12px; text-align: left;">Client</th>
+                            <th style="padding: 12px; text-align: center;">Exercises</th>
+                            <th style="padding: 12px; text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for plan in plans %}
+                        <tr style="border-bottom: 1px solid #f0f0f0;">
+                            <td style="padding: 12px;">
+                                <strong>{{ plan.plan_name }}</strong>
+                            </td>
+                            <td style="padding: 12px;">{{ plan.member_name }}</td>
+                            <td style="padding: 12px; text-align: center;">{{ plan.exercise_count }}</td>
+                            <td style="padding: 12px; text-align: right;">
+                                <a href="{% url 'trainer_plan_detail' plan.plan_id %}" class="btn btn-primary btn-sm">View</a>
+                                <form method="POST" action="{% url 'delete_workout_plan' plan.plan_id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline btn-sm" onclick="return confirm('Delete this plan?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="text-center p-5">
+                    <div class="feature-icon">📋</div>
+                    <p class="text-muted mb-3">No workout plans created yet</p>
+                    <a href="{% url 'create_workout_plan' %}" class="btn btn-primary">Create Your First Plan</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

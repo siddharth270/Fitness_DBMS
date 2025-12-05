@@ -62,8 +62,8 @@
                 <div class="stat-label">Calories Burned</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">{{ active_plans }}</div>
-                <div class="stat-label">Active Plans</div>
+                <div class="stat-number">{{ upcoming_appointments }}</div>
+                <div class="stat-label">Upcoming Appointments</div>
             </div>
         </div>
 
@@ -80,7 +80,14 @@
                 <div class="feature-icon">📅</div>
                 <h5 class="feature-title">Appointments</h5>
                 <p class="feature-description">Book and manage trainer appointments</p>
-                <a href="#" class="btn btn-primary">Manage Appointments</a>
+                <a href="{% url 'appointment_list' %}" class="btn btn-primary">Manage Appointments</a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h5 class="feature-title">Workout Plans</h5>
+                <p class="feature-description">View plans created by your trainers</p>
+                <a href="{% url 'member_plan_list' %}" class="btn btn-primary">View Plans</a>
             </div>
         </div>
     </div>

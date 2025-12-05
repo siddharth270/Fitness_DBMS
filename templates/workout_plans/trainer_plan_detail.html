@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ plan.plan_name }} - Gym Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <style>
+        .plan-header {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+        .exercise-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #11998e;
+        }
+        .exercise-targets {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            color: #666;
+        }
+        .target-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .muscle-tag {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 6px 12px;
+            border-radius: 16px;
+            margin: 4px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <nav class="navbar navbar-trainer">
+        <div class="container">
+            <div class="navbar-content">
+                <a href="{% url 'trainer_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <div class="navbar-right">
+                    <a href="{% url 'trainer_plan_list' %}" class="text-white">My Plans</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button type="button" class="close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Plan Header -->
+        <div class="plan-header">
+            <h1 style="margin-bottom: 8px;">{{ plan.plan_name }}</h1>
+            <p style="opacity: 0.9; margin: 0;">Created for: <strong>{{ plan.member_name }}</strong></p>
+            <div style="margin-top: 16px; display: flex; gap: 24px;">
+                <div>
+                    <span style="opacity: 0.8;">Total Exercises:</span>
+                    <strong>{{ plan.total_exercises }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="margin-bottom: 24px;">
+            <a href="{% url 'add_exercise_to_plan' plan.plan_id %}" class="btn btn-primary">+ Add Exercise</a>
+        </div>
+
+        <!-- Exercises List -->
+        <div class="card">
+            <h3 class="card-title">Exercises in Plan</h3>
+            
+            {% if exercises %}
+                {% for exercise in exercises %}
+                <div class="exercise-item">
+                    <div>
+                        <h4 style="margin: 0 0 8px 0;">{{ exercise.exercise_name }}</h4>
+                        <div class="exercise-targets">
+                            <span>📁 {{ exercise.category }}</span>
+                            <span>💪 {{ exercise.muscle_group }}</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="target-badge">{{ exercise.formatted_target }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center p-4">
+                    <p class="text-muted">No exercises added yet</p>
+                    <a href="{% url 'add_exercise_to_plan' plan.plan_id %}" class="btn btn-primary">Add First Exercise</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Muscle Groups Distribution -->
+        {% if muscle_groups %}
+        <div class="card">
+            <h4 class="card-title">Muscle Groups Targeted</h4>
+            <div>
+                {% for mg in muscle_groups %}
+                    <span class="muscle-tag">{{ mg.0 }} ({{ mg.1 }} exercises, {{ mg.2 }} sets)</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="text-center mt-4">
+            <a href="{% url 'trainer_plan_list' %}">← Back to Plans</a>
+        </div>
+    </div>
+</body>
+</html>

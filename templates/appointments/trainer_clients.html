@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Clients - Gym Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <style>
+        .client-card {
+            background: white;
+            padding: 24px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            border-left: 4px solid #f5576c;
+        }
+        .client-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+        .client-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 4px 0;
+        }
+        .client-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .info-box {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        .membership-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .membership-active {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        .membership-expired {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <!-- Navbar -->
+    <nav class="navbar navbar-trainer">
+        <div class="container">
+            <div class="navbar-content">
+                <a href="{% url 'trainer_dashboard' %}" class="navbar-brand">🏋️ Gym Management System</a>
+                <div class="navbar-right">
+                    <a href="{% url 'trainer_appointments' %}" class="text-white">Appointments</a>
+                    <a href="{% url 'trainer_schedule' %}" class="text-white">Schedule</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button type="button" class="close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="dashboard-header">
+            <h2>My Clients</h2>
+            <p class="text-muted">View and track your clients' progress</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ clients|length }}</div>
+                <div class="stat-label">Total Clients</div>
+            </div>
+        </div>
+
+        <!-- Clients List -->
+        {% if clients %}
+            {% for client in clients %}
+            <div class="client-card">
+                <div class="client-header">
+                    <div style="flex: 1;">
+                        <h4 class="client-name">
+                            👤 {{ client.name }}
+                            <span class="membership-badge membership-{{ client.membership_status|lower }}">
+                                {{ client.membership_status }}
+                            </span>
+                        </h4>
+                        <div class="appointment-meta">
+                            📧 {{ client.email }}
+                        </div>
+                        <div class="appointment-meta">
+                            🎂 {{ client.age }} years old • {{ client.gender }}
+                        </div>
+                        <div class="appointment-meta">
+                            📏 Height: {{ client.height }} cm • Weight: {{ client.weight }} kg
+                        </div>
+                        <div class="appointment-meta">
+                            📅 Member since: {{ client.join_date|date:"M d, Y" }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="client-info-grid">
+                    <div class="info-box">
+                        <div class="info-label">Total Appointments</div>
+                        <div class="info-value">{{ client.total_appointments }}</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">Completed Sessions</div>
+                        <div class="info-value">{{ client.completed_appointments }}</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">Workout Plans</div>
+                        <div class="info-value">{{ client.workout_plans }}</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">Total Workouts</div>
+                        <div class="info-value">{{ client.total_workouts }}</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">Last Appointment</div>
+                        <div class="info-value" style="font-size: 14px;">
+                            {% if client.last_appointment %}
+                                {{ client.last_appointment|date:"M d, Y" }}
+                            {% else %}
+                                Never
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">Last Workout</div>
+                        <div class="info-value" style="font-size: 14px;">
+                            {% if client.last_workout %}
+                                {{ client.last_workout|date:"M d, Y" }}
+                            {% else %}
+                                Never
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="card">
+                <div class="text-center p-5">
+                    <div style="font-size: 64px; margin-bottom: 16px;">👥</div>
+                    <h3>No Clients Yet</h3>
+                    <p class="text-muted">You haven't had any appointments with members yet</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

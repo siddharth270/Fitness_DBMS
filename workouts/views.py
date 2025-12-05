@@ -23,14 +23,14 @@ def call_function(function_name, params=[]):
 
 def workout_list(request):
     """Display member's workout history"""
-    # Check if user is logged in as member
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
     
     member_id = request.session.get('user_id')
     
-    # Call stored procedure: get_member_workout_history(member_id, limit)
+
     workouts_data = call_procedure('get_member_recent_workouts', [member_id, 20])
     
     workouts = []
@@ -44,7 +44,7 @@ def workout_list(request):
             'exercise_count': row[5] if len(row) > 5 else 0
         })
     
-    # Call stored functions for stats
+
     total_workouts = call_procedure('get_member_total_workouts', [member_id]) or 0
     total_calories = call_procedure('get_member_total_calories', [member_id]) or 0
     avg_duration = call_procedure('get_member_avg_workout_duration', [member_id]) or 0
@@ -53,7 +53,7 @@ def workout_list(request):
         'workouts': workouts,
         'total_workouts': total_workouts[0][2],
         'total_calories': total_calories[0][2],
-        'avg_duration': avg_duration[0][3],
+        'avg_duration': round(avg_duration[0][3], 1),
     }
     
     return render(request, 'workouts/workout_list.html', context)
@@ -67,39 +67,48 @@ def workout_detail(request, workout_id):
     
     member_id = request.session.get('user_id')
     
-    # Call stored procedure: get_workout_details(workout_id)
-    workout_details = call_procedure('get_full_workout_details', [workout_id])
-    
-    if not workout_details:
-        messages.error(request, 'Workout not found')
-        return redirect('workout_list')
-    
-    # First row contains workout info
-    first_row = workout_details[0]
-    workout = {
-        'workout_id': first_row[0],
-        'date': first_row[1],
-        'duration': first_row[2],
-        'calories_burned': first_row[3],
-        'gym_name': first_row[4]
-    }
-    
-    # Group exercises and sets
-    exercises = {}
-    for row in workout_details:
-        if len(row) > 5:  # Has exercise data
-            exercise_name = row[5]
+    with connection.cursor() as cursor:
+        cursor.callproc('get_full_workout_details', [workout_id])
+        
+
+        workout_overview = cursor.fetchall()
+        
+        if not workout_overview:
+            messages.error(request, 'Workout not found')
+            return redirect('workout_list')
+        
+        first_row = workout_overview[0]
+
+        workout = {
+            'workout_id': first_row[0],
+            'date': first_row[1],
+            'duration': first_row[2],
+            'calories_burned': first_row[3],
+            'gym_name': first_row[7],  
+            'plan_name': first_row[9],
+            'trainer_name': first_row[10],
+            'total_exercises': first_row[11],
+            'total_sets': first_row[12],
+        }
+        
+
+        cursor.nextset()
+        sets_data = cursor.fetchall()
+        
+        exercises = {}
+        for row in sets_data:
+            exercise_name = row[2] 
             if exercise_name not in exercises:
                 exercises[exercise_name] = {
-                    'name': row[5],
-                    'category': row[6],
-                    'muscle_group': row[7],
+                    'name': row[2],
+                    'category': row[3],
+                    'muscle_group': row[4],
                     'sets': []
                 }
             exercises[exercise_name]['sets'].append({
-                'set_id': row[8],
-                'reps': row[9],
-                'weight': row[10]
+                'set_number': row[7],
+                'reps': row[5],
+                'weight': row[6]
             })
     
     context = {
@@ -118,7 +127,7 @@ def new_workout(request):
     
     member_id = request.session.get('user_id')
     
-    # Call function: get_member_gym_name(member_id)
+
     gym_name = call_procedure('get_member_active_gym', [member_id])
     
     if not gym_name:
@@ -126,28 +135,21 @@ def new_workout(request):
         return redirect('member_dashboard')
     
     if request.method == 'POST':
-        # Call stored procedure: log_workout(member_id, gym_id, plan_id, date, duration, calories)
-        # For now, we just create the workout, duration and calories added later
+
         with connection.cursor() as cursor:
-            # Get gym_id first
-            cursor.execute("""
-                SELECT g.gym_id FROM Gym g
-                JOIN Membership m ON g.gym_id = m.gym_id
-                WHERE m.member_id = %s AND m.status = 'Active'
-                LIMIT 1
-            """, [member_id])
-            gym_result = cursor.fetchone()
-            gym_id = gym_result[0] if gym_result else None
+
+            gym_details = call_procedure('get_member_active_gym', [member_id])
+            gym_id = gym_details[0][2] if gym_details else None
             
             if gym_id:
-                # Call procedure: create_workout(member_id, gym_id, date)
+
                 cursor.callproc('create_new_workout', [member_id, gym_id, None, date.today(), None, None])
                 
-                # Get the workout_id from the procedure output or last insert
+
                 cursor.execute("SELECT LAST_INSERT_ID()")
                 workout_id = cursor.fetchone()[0]
                 
-                # Store workout_id in session
+
                 request.session['current_workout_id'] = workout_id
                 messages.success(request, 'Workout started! Now add exercises.')
                 return redirect('add_exercise')
@@ -166,16 +168,16 @@ def add_exercise(request):
         return redirect('member_login')
     
     workout_id = request.session.get('current_workout_id')
+    member_id = request.session.get('user_id')
     if not workout_id:
         messages.error(request, 'No active workout session')
         return redirect('new_workout')
     
-    # Search exercises
+
     search_query = request.GET.get('search', '')
     category_filter = request.GET.get('category', '')
     muscle_group = request.GET.get('muscle_group', '')
     
-    # Call stored procedure: search_exercises(keyword, category, muscle_group)
     exercises_data = call_procedure('find_exercises_by_criteria', [search_query or None, category_filter or None, muscle_group or None])
     
     exercises = []
@@ -187,13 +189,13 @@ def add_exercise(request):
             'muscle_group': row[3]
         })
     
-    # Get distinct categories - call a function or procedure
+
     with connection.cursor() as cursor:
         cursor.execute("SELECT DISTINCT category FROM Exercise ORDER BY category")
         categories = [row[0] for row in cursor.fetchall()]
     
-    # Call stored procedure: get_workout_exercises(workout_id)
-    current_exercises_data = call_procedure('get_full_workout_details', [workout_id])
+
+    current_exercises_data = call_procedure('get_workout_exercises', [workout_id])
     
     current_exercises = []
     for row in current_exercises_data:
@@ -230,24 +232,23 @@ def log_set(request, exercise_id):
         reps = request.POST.get('reps')
         weight = request.POST.get('weight', 0)
         
-        # Call stored procedure: log_exercise_set(workout_id, exercise_id, reps, weight)
+
         with connection.cursor() as cursor:
             cursor.callproc('add_set_to_workout', [workout_id, exercise_id, reps, weight])
         
         messages.success(request, 'Set logged successfully!')
         return redirect('add_exercise')
     
-    # Get exercise details
+
     exercise = Exercise.objects.get(exercise_id=exercise_id)
     
-    # Call stored procedure: get_exercise_history(member_id, exercise_id)
-    # This shows previous performance for this exercise
+
     member_id = request.session.get('user_id')
     exercise_history = call_procedure('get_exercise_progress', [member_id, exercise_id])
     
     previous_sets = []
     if exercise_history:
-        for row in exercise_history[:5]:  # Last 5 sets
+        for row in exercise_history[:5]:  
             previous_sets.append({
                 'date': row[0],
                 'reps': row[1],
@@ -278,17 +279,17 @@ def complete_workout(request):
         duration = request.POST.get('duration')
         calories = request.POST.get('calories', 0)
         
-        # Call stored procedure: complete_workout(workout_id, duration, calories)
+
         with connection.cursor() as cursor:
-            cursor.callproc('get_full_workout_details', [workout_id])
+            cursor.callproc('update_workout_completion', [workout_id, duration, calories])
         
-        # Clear session
+
         del request.session['current_workout_id']
         
         messages.success(request, 'Workout completed and saved!')
         return redirect('workout_list')
     
-    # Call stored procedure: get_workout_summary(workout_id)
+
     summary_data = call_procedure('get_full_workout_details', [workout_id])
     
     if summary_data and summary_data[0]:

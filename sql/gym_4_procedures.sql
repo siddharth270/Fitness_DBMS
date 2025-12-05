@@ -629,7 +629,7 @@ BEGIN
 END $$
 DELIMITER ;
 
-CALL get_full_workout_details(1); 
+CALL get_full_workout_details(2); 
 
 -- d. Get Progress on Specific Exercise
 DELIMITER $$
