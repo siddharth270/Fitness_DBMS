@@ -91,3 +91,41 @@ BEGIN
     ORDER BY wp.plan_id DESC;
 END $$
 DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE delete_member_appointment(
+    IN p_appointment_id INT,
+    IN p_member_id INT
+)
+BEGIN
+    DECLARE v_valid INT DEFAULT 0;
+    DECLARE v_status VARCHAR(20);
+    
+    -- Verify the member owns this appointment
+    SELECT COUNT(*), status INTO v_valid, v_status
+    FROM Appointment
+    WHERE appointment_id = p_appointment_id 
+      AND member_id = p_member_id
+    GROUP BY status;
+    
+    IF v_valid = 0 THEN
+        SELECT 
+            'DELETE FAILED' AS result,
+            'Unauthorized access or appointment not found' AS message;
+    ELSEIF v_status = 'Completed' THEN
+        SELECT 
+            'DELETE FAILED' AS result,
+            'Cannot delete completed appointments' AS message;
+    ELSE
+        -- Delete the appointment
+        DELETE FROM Appointment
+        WHERE appointment_id = p_appointment_id
+          AND member_id = p_member_id;
+        
+        SELECT 
+            'DELETE SUCCESS' AS result,
+            'Appointment deleted successfully' AS message,
+            p_appointment_id AS deleted_appointment_id;
+    END IF;
+END $$
+DELIMITER ;

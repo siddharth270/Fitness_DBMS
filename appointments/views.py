@@ -20,25 +20,41 @@ def appointment_list(request):
     
     member_id = request.session.get('user_id')
     
-    with connection.cursor() as cursor:
-
-        all_appointments = call_procedure('get_member_appointments', [member_id, 'All'])
+    # Get all appointments
+    all_appointments = call_procedure('get_member_appointments', [member_id, 'All'])
+    
+    appointments = []
+    for row in all_appointments:
+        # Determine state based on status and time
+        status = row[3]
+        start_time = row[1]
         
-        appointments = []
-        for row in all_appointments:
-            appointments.append({
-                'appointment_id': row[0],
-                'start_time': row[1],
-                'end_time': row[2],
-                'status': row[3],
-                'trainer_id': row[4],
-                'trainer_name': row[5],
-                'specialization': row[6],
-                'gym_name': row[7],
-                'state': row[8]
-            })
+        if status == 'Cancelled':
+            state = 'Cancelled'
+        elif status == 'Completed':
+            state = 'Completed'
+        elif start_time > datetime.now():
+            state = 'Upcoming'
+        else:
+            state = 'Past'
+        
+        appointments.append({
+            'appointment_id': row[0],
+            'start_time': row[1],
+            'end_time': row[2],
+            'status': row[3],
+            'trainer_id': row[4],
+            'trainer_name': row[5],
+            'trainer_email': row[6],
+            'specialization': row[7],
+            'gym_id': row[8],
+            'gym_name': row[9],
+            'location': row[10],
+            'time_status': row[11],
+            'state': state 
+        })
+    
     scheduled_appointments = call_procedure('get_member_appointments', [member_id, 'Scheduled'])
-
     
     context = {
         'appointments': appointments,
@@ -258,3 +274,23 @@ def trainer_clients(request):
     }
     
     return render(request, 'appointments/trainer_clients.html', context)
+
+
+def delete_appointment(request, appointment_id):
+    """Delete an appointment"""
+    if request.session.get('user_type') != 'member':
+        messages.error(request, 'Please log in as a member')
+        return redirect('member_login')
+    
+    member_id = request.session.get('user_id')
+    
+    if request.method == 'POST':
+        result = call_procedure('delete_member_appointment', [appointment_id, member_id])
+        
+        if result and result[0][0] == 'DELETE SUCCESS':
+            messages.success(request, 'Appointment deleted successfully')
+        else:
+            error_msg = result[0][1] if result else 'Failed to delete appointment'
+            messages.error(request, error_msg)
+    
+    return redirect('appointment_list')

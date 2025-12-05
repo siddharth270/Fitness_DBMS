@@ -66,6 +66,19 @@
             font-size: 64px;
             margin-bottom: 16px;
         }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border: none;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
     </style>
 </head>
 <body class="dashboard">
@@ -142,12 +155,22 @@
                             📍 {{ appointment.gym_name }}
                         </div>
                     </div>
-                    <div>
+                    <div class="action-buttons">
                         {% if appointment.state == 'Upcoming' %}
-                            <a href="{% url 'trainer_detail' appointment.trainer_id %}" class="btn btn-primary btn-sm" style="margin-right: 8px;">View Trainer</a>
+                            <a href="{% url 'trainer_detail' appointment.trainer_id %}" class="btn btn-primary btn-sm">View Trainer</a>
                             <form method="POST" action="{% url 'cancel_appointment' appointment.appointment_id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to cancel this appointment?');">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-outline btn-sm" style="color: #dc3545; border-color: #dc3545;">Cancel</button>
+                                <button type="submit" class="btn btn-outline btn-sm" style="color: #ffc107; border-color: #ffc107;">Cancel</button>
+                            </form>
+                            <form method="POST" action="{% url 'delete_appointment' appointment.appointment_id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to permanently delete this appointment? This action cannot be undone.');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        {% elif appointment.state == 'Cancelled' %}
+                            <a href="{% url 'trainer_detail' appointment.trainer_id %}" class="btn btn-primary btn-sm">View Trainer</a>
+                            <form method="POST" action="{% url 'delete_appointment' appointment.appointment_id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to permanently delete this appointment? This action cannot be undone.');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                             </form>
                         {% else %}
                             <a href="{% url 'trainer_detail' appointment.trainer_id %}" class="btn btn-primary btn-sm">View Trainer</a>
