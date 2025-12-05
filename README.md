@@ -12,22 +12,10 @@ python3 -m venv env
 pip install -r requirements.txt
 ```
 
-- Run the following commands in the terminal
+- Run the following command in the terminal
 
 ```
-python3 manage.py migrate
-```
-
-```
-python3 manage.py create_test_users
-```
-
-```
-python3 manage.py hash_passwords
-```
-
-```
-python3 manage.py runserver
+python3 manage.py start
 ```
 
 
