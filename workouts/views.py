@@ -332,7 +332,7 @@ def search_exercises(request):
 
 
 def add_exercise_to_workout(request, exercise_id):
-    """Add an exercise to the current workout (creates first set)"""
+    """Add an exercise to the current workout (redirects to log set)"""
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
@@ -342,16 +342,11 @@ def add_exercise_to_workout(request, exercise_id):
         messages.error(request, 'No active workout session')
         return redirect('new_workout')
     
-    # Get exercise name for message
+
     exercise = Exercise.objects.get(exercise_id=exercise_id)
     
-    # Store the exercise to add sets to
-    request.session['current_exercise_id'] = exercise_id
-    request.session['current_exercise_name'] = exercise.exercise_name
-    
     messages.success(request, f'{exercise.exercise_name} added! Now log your sets.')
-    return redirect('active_workout')
-
+    return redirect('log_set', exercise_id=exercise_id) 
 
 def log_set(request, exercise_id):
     """Log a set for an exercise"""
