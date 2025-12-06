@@ -6,26 +6,26 @@ from .models import Appointment
 from accounts.models import Trainer
 
 def call_procedure(procedure_name, params=[]):
-    """Helper function to call stored procedures"""
+
     with connection.cursor() as cursor:
         cursor.callproc(procedure_name, params)
         return cursor.fetchall()
 
 
 def appointment_list(request):
-    """Display member's appointments"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
     
     member_id = request.session.get('user_id')
     
-    # Get all appointments
+
     all_appointments = call_procedure('get_member_appointments', [member_id, 'All'])
     
     appointments = []
     for row in all_appointments:
-        # Determine state based on status and time
+
         status = row[3]
         start_time = row[1]
         
@@ -65,7 +65,7 @@ def appointment_list(request):
 
 
 def book_appointment(request):
-    """Book a new appointment with a trainer"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
@@ -93,7 +93,7 @@ def book_appointment(request):
         
 
         start_datetime = datetime.strptime(f"{appointment_date} {start_time}", "%Y-%m-%d %H:%M")
-        end_datetime = start_datetime + timedelta(hours=1)  # 1 hour appointment
+        end_datetime = start_datetime + timedelta(hours=1) 
         
         with connection.cursor() as cursor:
 
@@ -111,7 +111,7 @@ def book_appointment(request):
 
 
 def cancel_appointment(request, appointment_id):
-    """Cancel an appointment"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
@@ -134,7 +134,7 @@ def cancel_appointment(request, appointment_id):
 
 
 def trainer_detail(request, trainer_id):
-    """View trainer details and availability"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')

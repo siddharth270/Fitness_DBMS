@@ -6,14 +6,14 @@ from .models import Exercise, Workout, Set
 from accounts.models import Member
 
 def call_procedure(procedure_name, params=[]):
-    """Helper function to call stored procedures"""
+
     with connection.cursor() as cursor:
         cursor.callproc(procedure_name, params)
         return cursor.fetchall()
 
 
 def workout_list(request):
-    """Display member's workout history"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
@@ -102,7 +102,7 @@ def workout_detail(request, workout_id):
 
 
 def new_workout(request):
-    """Start a new workout session"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
@@ -140,7 +140,7 @@ def new_workout(request):
 
 
 def active_workout(request):
-    """Main active workout page - shows exercises and sets"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
@@ -150,7 +150,7 @@ def active_workout(request):
         messages.error(request, 'No active workout session')
         return redirect('new_workout')
     
-    # Get workout info (including plan_id if from a plan)
+
     workout_info = call_procedure('get_workout_info', [workout_id])
     plan_id = None
     plan_name = None
@@ -158,10 +158,10 @@ def active_workout(request):
         plan_id = workout_info[0][3]
         plan_name = workout_info[0][5]
     
-    # Get all exercises and sets for this workout
+
     sets_data = call_procedure('get_workout_exercise_sets', [workout_id])
     
-    # Group by exercise
+
     exercises = {}
     logged_exercise_ids = set()
     
@@ -196,7 +196,7 @@ def active_workout(request):
         exercises[exercise_id]['total_weight'] += weight * reps
         exercises[exercise_id]['total_reps'] += reps
     
-    # If workout is from a plan, get plan exercises and add those not yet started
+
     plan_exercises = []
     if plan_id:
         plan_exercise_data = call_procedure('get_plan_exercise_list', [plan_id])
@@ -204,14 +204,14 @@ def active_workout(request):
         for row in plan_exercise_data:
             exercise_id = row[0]
             
-            # Add target info to exercises that are already logged
+
             if exercise_id in exercises:
                 exercises[exercise_id]['target_sets'] = row[4]
                 exercises[exercise_id]['target_reps'] = row[5]
                 exercises[exercise_id]['target_weight'] = row[6]
                 exercises[exercise_id]['from_plan'] = True
             else:
-                # Add exercises from plan that haven't been started yet
+
                 plan_exercises.append({
                     'exercise_id': row[0],
                     'name': row[1],
@@ -224,7 +224,7 @@ def active_workout(request):
                     'not_started': True
                 })
     
-    # Calculate averages for logged exercises
+
     for ex_id in exercises:
         ex = exercises[ex_id]
         if ex['total_reps'] > 0:
@@ -244,19 +244,19 @@ def active_workout(request):
 
 
 def start_workout_from_plan(request, plan_id):
-    """Start a new workout based on a workout plan"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
     
     member_id = request.session.get('user_id')
     
-    # Check if there's already an active workout
+
     if request.session.get('current_workout_id'):
         messages.warning(request, 'You already have an active workout. Finish or cancel it first.')
         return redirect('active_workout')
     
-    # Get member's gym
+
     gym_data = call_procedure('get_member_active_gym', [member_id])
     
     if not gym_data:
@@ -265,7 +265,7 @@ def start_workout_from_plan(request, plan_id):
     
     gym_id = gym_data[0][2]
     
-    # Create workout from plan
+
     result = call_procedure('start_workout_from_plan', [member_id, plan_id, gym_id, date.today()])
     
     if result and result[0][1] == 'WORKOUT STARTED':
@@ -279,7 +279,7 @@ def start_workout_from_plan(request, plan_id):
 
 
 def search_exercises(request):
-    """Search exercises (returns results for modal)"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
@@ -310,7 +310,7 @@ def search_exercises(request):
                 'muscle_group': row[3]
             })
     
-    # Get categories for filter dropdown
+
     categories_data = call_procedure('get_all_exercise_categories', [])
     categories = [row[0] for row in categories_data]
     
@@ -332,7 +332,7 @@ def search_exercises(request):
 
 
 def add_exercise_to_workout(request, exercise_id):
-    """Add an exercise to the current workout (redirects to log set)"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
@@ -349,7 +349,7 @@ def add_exercise_to_workout(request, exercise_id):
     return redirect('log_set', exercise_id=exercise_id) 
 
 def log_set(request, exercise_id):
-    """Log a set for an exercise"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
@@ -368,10 +368,10 @@ def log_set(request, exercise_id):
         messages.success(request, 'Set logged!')
         return redirect('active_workout')
     
-    # GET request - show the log set form
+
     exercise = Exercise.objects.get(exercise_id=exercise_id)
     
-    # Get existing sets for this exercise in this workout
+
     sets_data = call_procedure('get_workout_exercise_sets', [workout_id])
     
     existing_sets = []
@@ -384,10 +384,10 @@ def log_set(request, exercise_id):
                 'set_number': row[7]
             })
     
-    # Check if workout is from a plan and get target info
+
     target_info = None
     workout_info = call_procedure('get_workout_info', [workout_id])
-    if workout_info and workout_info[0][3]:  # has plan_id
+    if workout_info and workout_info[0][3]: 
         plan_id = workout_info[0][3]
         plan_exercises = call_procedure('get_plan_exercise_list', [plan_id])
         for row in plan_exercises:
@@ -399,7 +399,7 @@ def log_set(request, exercise_id):
                 }
                 break
     
-    # Get previous performance
+
     member_id = request.session.get('user_id')
     history_data = call_procedure('get_exercise_progress', [member_id, exercise_id])
     
@@ -425,7 +425,7 @@ def log_set(request, exercise_id):
 
 
 def delete_set(request, set_id):
-    """Delete a set from the workout"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
@@ -447,7 +447,7 @@ def delete_set(request, set_id):
 
 
 def finish_workout(request):
-    """Finish and save the workout"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
@@ -503,7 +503,7 @@ def finish_workout(request):
 
 
 def cancel_workout(request):
-    """Cancel/discard the current workout"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
@@ -512,10 +512,10 @@ def cancel_workout(request):
     member_id = request.session.get('user_id')
     
     if workout_id and request.method == 'POST':
-        # Use stored procedure to cancel workout
+
         result = call_procedure('cancel_workout_session', [workout_id, member_id])
         
-        # Clear session
+
         if 'current_workout_id' in request.session:
             del request.session['current_workout_id']
         if 'current_exercise_id' in request.session:

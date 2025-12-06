@@ -4,18 +4,18 @@ from django.db import connection
 from .models import Member, Trainer
 
 def call_procedure(procedure_name, params=[]):
-    """Helper function to call stored procedures"""
+
     with connection.cursor() as cursor:
         cursor.callproc(procedure_name, params)
         return cursor.fetchall()
 
 def login_select(request):
-    """Landing page to select login type"""
+
     return render(request, 'login_select.html')
 
 
 def member_login(request):
-    """Handle member login"""
+
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -38,7 +38,7 @@ def member_login(request):
 
 
 def trainer_login(request):
-    """Handle trainer login"""
+
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -61,7 +61,7 @@ def trainer_login(request):
 
 
 def member_dashboard(request):
-    """Member dashboard view"""
+
 
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
@@ -110,7 +110,7 @@ def member_dashboard(request):
 
 
 def trainer_dashboard(request):
-    """Trainer dashboard view"""
+
 
     if request.session.get('user_type') != 'trainer':
         messages.error(request, 'Please log in as a trainer')
@@ -138,7 +138,7 @@ def trainer_dashboard(request):
 
 
 def logout(request):
-    """Handle logout for both member and trainer"""
+
     request.session.flush()
     messages.success(request, 'You have been logged out successfully')
     return redirect('login_select')

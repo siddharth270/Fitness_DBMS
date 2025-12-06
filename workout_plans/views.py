@@ -8,7 +8,7 @@ def call_procedure(procedure_name, params=[]):
         return cursor.fetchall()
 
 def trainer_plan_list(request):
-    """List all workout plans created by trainer"""
+
     if request.session.get('user_type') != 'trainer':
         messages.error(request, 'Please log in as a trainer')
         return redirect('trainer_login')
@@ -36,7 +36,7 @@ def trainer_plan_list(request):
 
 
 def create_workout_plan(request):
-    """Create a new workout plan for a member"""
+
     if request.session.get('user_type') != 'trainer':
         messages.error(request, 'Please log in as a trainer')
         return redirect('trainer_login')
@@ -47,7 +47,7 @@ def create_workout_plan(request):
         member_id = request.POST.get('member_id')
         plan_name = request.POST.get('plan_name')
         
-        # Call stored procedure: create_workout_plan
+
         result = call_procedure('create_workout_plan', [trainer_id, member_id, plan_name])
         
         if result and result[0][0] == 'PLAN CREATED':
@@ -58,7 +58,7 @@ def create_workout_plan(request):
             error_msg = result[0][1] if result else 'Failed to create plan'
             messages.error(request, error_msg)
     
-    # Get trainer's members for dropdown
+
     members_data = call_procedure('get_trainer_all_members', [trainer_id])
     
     members = []
@@ -76,7 +76,7 @@ def create_workout_plan(request):
 
 
 def trainer_plan_detail(request, plan_id):
-    """View details of a workout plan (trainer view)"""
+
     if request.session.get('user_type') != 'trainer':
         messages.error(request, 'Please log in as a trainer')
         return redirect('trainer_login')
@@ -142,7 +142,7 @@ def trainer_plan_detail(request, plan_id):
 
 
 def add_exercise_to_plan(request, plan_id):
-    """Add an exercise to a workout plan"""
+
     if request.session.get('user_type') != 'trainer':
         messages.error(request, 'Please log in as a trainer')
         return redirect('trainer_login')
@@ -201,7 +201,7 @@ def add_exercise_to_plan(request, plan_id):
 
 
 def delete_workout_plan(request, plan_id):
-    """Delete a workout plan"""
+
     if request.session.get('user_type') != 'trainer':
         messages.error(request, 'Please log in as a trainer')
         return redirect('trainer_login')
@@ -222,7 +222,7 @@ def delete_workout_plan(request, plan_id):
 
 
 def member_plan_list(request):
-    """List all workout plans assigned to member"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')
@@ -253,7 +253,7 @@ def member_plan_list(request):
 
 
 def member_plan_detail(request, plan_id):
-    """View details of a workout plan (member view)"""
+
     if request.session.get('user_type') != 'member':
         messages.error(request, 'Please log in as a member')
         return redirect('member_login')

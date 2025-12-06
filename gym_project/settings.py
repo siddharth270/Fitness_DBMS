@@ -4,10 +4,6 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-SECRET_KEY = 'django-insecure-replace-this-with-your-own-secret-key-in-production'
-
-
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']

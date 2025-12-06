@@ -6,7 +6,7 @@ Fitness Application
 
 
 ### Install Dependencies
-- Create a virtual environment and use the belo command to download the dependencies.
+- Create a virtual environment and use the below command to download the dependencies.
 
 ```
 python3 -m venv env
@@ -16,6 +16,7 @@ python3 -m venv env
 source env/bin/activate 
 ```
 
+- To install all the libraries and module required, run the below command.
 ```
 pip install -r requirements.txt
 ```
@@ -25,14 +26,4 @@ pip install -r requirements.txt
 ```
 python3 manage.py start
 ```
-
-
-# TO-DO
-- Check CRUD
-- workout logging
-- According to spec
-    a. Final Report
-    b. UML
-    c. Reverse Engineer LD
-    d. 5-7 min description with CRUD demonstration
     
