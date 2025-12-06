@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Schedule - Gym Management System</title>
+    <title>Daily Schedule - LIFT LOG</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
@@ -46,7 +46,7 @@
     <nav class="navbar navbar-trainer">
         <div class="container">
             <div class="navbar-content">
-                <a href="{% url 'trainer_dashboard' %}" class="navbar-brand">🏋️ Gym Management System</a>
+                <a href="{% url 'trainer_dashboard' %}" class="navbar-brand">LIFT LOG</a>
                 <div class="navbar-right">
                     <a href="{% url 'trainer_appointments' %}" class="text-white">Appointments</a>
                     <a href="{% url 'trainer_clients' %}" class="text-white">Clients</a>
@@ -89,7 +89,7 @@
                 {% for appointment in appointments %}
                 <div class="schedule-card {{ appointment.state|lower|cut:' ' }}">
                     <div class="time-block">
-                        🕐 {{ appointment.start_time_only }} - {{ appointment.end_time_only }}
+                        {{ appointment.start_time_only }} - {{ appointment.end_time_only }}
                         <span style="font-size: 14px; color: #666; font-weight: normal;">
                             ({{ appointment.duration_minutes }} minutes)
                         </span>
@@ -98,13 +98,13 @@
                         <strong>Client:</strong> {{ appointment.member_name }}
                     </div>
                     <div class="appointment-meta">
-                        📧 {{ appointment.member_email }}
+                        {{ appointment.member_email }}
                     </div>
                     <div class="appointment-meta">
-                        👤 {{ appointment.age }} years old, {{ appointment.gender }}
+                        {{ appointment.age }} years old, {{ appointment.gender }}
                     </div>
                     <div class="appointment-meta">
-                        📍 {{ appointment.gym_name }}
+                        {{ appointment.gym_name }}
                     </div>
                     <div class="appointment-meta" style="margin-top: 8px;">
                         <span class="status-badge status-{{ appointment.status|lower }}">

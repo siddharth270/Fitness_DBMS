@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Workout Plans - Gym Management System</title>
+    <title>My Workout Plans - LIFT LOG</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
@@ -15,10 +15,6 @@
             margin-bottom: 16px;
             border: 2px solid #e0e0e0;
             transition: all 0.3s ease;
-        }
-        .plan-card:hover {
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
         }
         .plan-meta {
             display: flex;
@@ -41,7 +37,7 @@
     <nav class="navbar navbar-member">
         <div class="container">
             <div class="navbar-content">
-                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand"> LIFT LOG</a>
                 <div class="navbar-right">
                     <a href="{% url 'member_dashboard' %}" class="text-white">Dashboard</a>
                     <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
@@ -74,10 +70,10 @@
                         <span class="trainer-badge">👤 {{ plan.trainer_name }} • {{ plan.trainer_specialization }}</span>
                         
                         <div class="plan-meta">
-                            <span>📋 {{ plan.total_exercises }} exercises</span>
-                            <span>🏋️ Used {{ plan.times_used }} times</span>
+                            <span> {{ plan.total_exercises }} exercises</span>
+                            <span> Used {{ plan.times_used }} times</span>
                             {% if plan.last_used %}
-                                <span>📅 Last used: {{ plan.last_used|date:"M d, Y" }}</span>
+                                <span>Last used: {{ plan.last_used|date:"M d, Y" }}</span>
                             {% endif %}
                         </div>
                         

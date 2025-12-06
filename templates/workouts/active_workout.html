@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Active Workout - Gym Management System</title>
+    <title>Active Workout - LIFT LOG</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
     <style>
         .workout-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea ;
             color: white;
             padding: 20px;
             border-radius: 12px;
@@ -119,10 +119,7 @@
             background: #ffebee;
             color: #d32f2f;
         }
-        .btn-icon.delete:hover {
-            background: #d32f2f;
-            color: white;
-        }
+
         .exercise-footer {
             padding: 12px 20px;
             background: #f8f9fa;
@@ -139,11 +136,6 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
-        }
-        .add-set-btn:hover {
-            background: #667eea;
-            color: white;
-            border-style: solid;
         }
         .stats-row {
             display: grid;
@@ -176,17 +168,10 @@
         .btn-finish {
             background: #28a745;
         }
-        .btn-finish:hover {
-            background: #218838;
-        }
         .btn-cancel-workout {
             background: none;
             border: 2px solid #dc3545;
             color: #dc3545;
-        }
-        .btn-cancel-workout:hover {
-            background: #dc3545;
-            color: white;
         }
     </style>
 </head>
@@ -194,9 +179,9 @@
     <nav class="navbar navbar-member">
         <div class="container">
             <div class="navbar-content">
-                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand"> LIFT LOG</a>
                 <div class="navbar-right">
-                    <span class="text-white">🏋️ Workout in Progress</span>
+                    <span class="text-white">Workout in Progress</span>
                 </div>
             </div>
         </div>
@@ -217,7 +202,7 @@
             <div>
                 <h2 style="margin: 0;">Today's Workout</h2>
                 {% if plan_name %}
-                <p style="margin: 4px 0 0; opacity: 0.9;">📋 {{ plan_name }}</p>
+                <p style="margin: 4px 0 0; opacity: 0.9;"> {{ plan_name }}</p>
                 {% else %}
                 <p style="margin: 4px 0 0; opacity: 0.9;">{{ "now"|date:"l, F d" }}</p>
                 {% endif %}
@@ -326,7 +311,6 @@
         {% else %}
             <div class="card">
                 <div class="empty-state">
-                    <div class="empty-icon">🏋️</div>
                     <h3>No Exercises Yet</h3>
                     <p class="text-muted mb-4">Add your first exercise to start logging sets</p>
                     <a href="{% url 'search_exercises' %}" class="btn btn-primary" style="padding: 14px 32px;">+ Add Exercise</a>

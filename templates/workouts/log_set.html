@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
     <style>
         .exercise-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             padding: 24px;
             border-radius: 12px;
@@ -132,9 +132,7 @@
             cursor: pointer;
             font-size: 14px;
         }
-        .save-btn:hover {
-            background: #218838;
-        }
+
         .quick-weight {
             display: flex;
             gap: 8px;
@@ -153,10 +151,7 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .quick-btn:hover, .quick-btn.active {
-            background: #667eea;
-            color: white;
-        }
+
         .history-card {
             background: white;
             border-radius: 12px;
@@ -203,19 +198,16 @@
             cursor: pointer;
             font-size: 12px;
         }
-        .delete-btn:hover {
-            background: #d32f2f;
-            color: white;
-        }
+
     </style>
 </head>
 <body class="dashboard">
     <nav class="navbar navbar-member">
         <div class="container">
             <div class="navbar-content">
-                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand">LIFT LOG</a>
                 <div class="navbar-right">
-                    <span class="text-white">📝 Log Set</span>
+                    <span class="text-white"> Log Set</span>
                 </div>
             </div>
         </div>
@@ -299,7 +291,7 @@
         <!-- Previous Performance -->
         {% if previous_sets %}
         <div class="history-card">
-            <div class="history-header">📊 Previous Performance</div>
+            <div class="history-header">Previous Performance</div>
             {% for set in previous_sets %}
             <div class="history-item">
                 <span>{{ set.date|date:"M d, Y" }}</span>

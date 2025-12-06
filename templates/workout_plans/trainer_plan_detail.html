@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ plan.plan_name }} - Gym Management System</title>
+    <title>{{ plan.plan_name }} - LIFT LOG</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
@@ -53,7 +53,7 @@
     <nav class="navbar navbar-trainer">
         <div class="container">
             <div class="navbar-content">
-                <a href="{% url 'trainer_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <a href="{% url 'trainer_dashboard' %}" class="navbar-brand"> LIFT LOG</a>
                 <div class="navbar-right">
                     <a href="{% url 'trainer_plan_list' %}" class="text-white">My Plans</a>
                     <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
@@ -99,8 +99,8 @@
                     <div>
                         <h4 style="margin: 0 0 8px 0;">{{ exercise.exercise_name }}</h4>
                         <div class="exercise-targets">
-                            <span>📁 {{ exercise.category }}</span>
-                            <span>💪 {{ exercise.muscle_group }}</span>
+                            <span> {{ exercise.category }}</span>
+                            <span> {{ exercise.muscle_group }}</span>
                         </div>
                     </div>
                     <div style="text-align: right;">

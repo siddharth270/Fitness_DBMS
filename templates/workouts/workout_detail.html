@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workout Details - Gym Management System</title>
+    <title>Workout Details - LIFT LOG</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
@@ -46,7 +46,7 @@
     <nav class="navbar navbar-member">
         <div class="container">
             <div class="navbar-content">
-                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand">LIFT LOG</a>
                 <div class="navbar-right">
                     <a href="{% url 'workout_list' %}" class="text-white">My Workouts</a>
                     <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
@@ -108,8 +108,8 @@
                 {% for set in exercise.sets %}
                 <div class="set-row">
                     <span class="set-label">Set {{ set.set_number }}</span>
-                    <span>🔁 {{ set.reps }} reps</span>
-                    <span>⚖️ {% if set.weight %}{{ set.weight }} lbs{% else %}Bodyweight{% endif %}</span>
+                    <span> {{ set.reps }} reps</span>
+                    <span> {% if set.weight %}{{ set.weight }} lbs{% else %}Bodyweight{% endif %}</span>
                 </div>
                 {% endfor %}
                 

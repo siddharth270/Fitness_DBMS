@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Clients - Gym Management System</title>
+    <title>My Clients - LIFT LOG</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
@@ -70,7 +70,7 @@
     <nav class="navbar navbar-trainer">
         <div class="container">
             <div class="navbar-content">
-                <a href="{% url 'trainer_dashboard' %}" class="navbar-brand">🏋️ Gym Management System</a>
+                <a href="{% url 'trainer_dashboard' %}" class="navbar-brand">LIFT LOG</a>
                 <div class="navbar-right">
                     <a href="{% url 'trainer_appointments' %}" class="text-white">Appointments</a>
                     <a href="{% url 'trainer_schedule' %}" class="text-white">Schedule</a>
@@ -110,22 +110,22 @@
                 <div class="client-header">
                     <div style="flex: 1;">
                         <h4 class="client-name">
-                            👤 {{ client.name }}
+                            {{ client.name }}
                             <span class="membership-badge membership-{{ client.membership_status|lower }}">
                                 {{ client.membership_status }}
                             </span>
                         </h4>
                         <div class="appointment-meta">
-                            📧 {{ client.email }}
+                            {{ client.email }}
                         </div>
                         <div class="appointment-meta">
-                            🎂 {{ client.age }} years old • {{ client.gender }}
+                            {{ client.age }} years old • {{ client.gender }}
                         </div>
                         <div class="appointment-meta">
-                            📏 Height: {{ client.height }} cm • Weight: {{ client.weight }} kg
+                            Height: {{ client.height }} cm • Weight: {{ client.weight }} kg
                         </div>
                         <div class="appointment-meta">
-                            📅 Member since: {{ client.join_date|date:"M d, Y" }}
+                            Member since: {{ client.join_date|date:"M d, Y" }}
                         </div>
                     </div>
                 </div>

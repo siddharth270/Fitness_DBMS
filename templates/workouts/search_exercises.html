@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Exercise - Gym Management System</title>
+    <title>Add Exercise - LIFT LOG</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
@@ -84,9 +84,7 @@
             border-bottom: 1px solid #f0f0f0;
             transition: background 0.2s;
         }
-        .exercise-item:hover {
-            background: #f8f9fa;
-        }
+
         .exercise-item:last-child {
             border-bottom: none;
         }
@@ -109,9 +107,7 @@
             cursor: pointer;
             transition: background 0.2s;
         }
-        .add-btn:hover {
-            background: #5a6fd6;
-        }
+
         .no-results {
             padding: 40px 20px;
             text-align: center;
@@ -135,16 +131,14 @@
             font-weight: 500;
             margin-bottom: 20px;
         }
-        .back-link:hover {
-            text-decoration: underline;
-        }
+
     </style>
 </head>
 <body class="dashboard">
     <nav class="navbar navbar-member">
         <div class="container">
             <div class="navbar-content">
-                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand"> LIFT LOG</a>
                 <div class="navbar-right">
                     <span class="text-white">🔍 Find Exercise</span>
                 </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Appointments - Gym Management System</title>
+    <title>My Appointments - LIFT LOG</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
@@ -24,9 +24,6 @@
             font-size: 16px;
             color: #666;
             transition: all 0.3s ease;
-        }
-        .filter-tab:hover {
-            color: #f5576c;
         }
         .filter-tab.active {
             color: #f5576c;
@@ -82,7 +79,7 @@
     <nav class="navbar navbar-trainer">
         <div class="container">
             <div class="navbar-content">
-                <a href="{% url 'trainer_dashboard' %}" class="navbar-brand">🏋️ Gym Management System</a>
+                <a href="{% url 'trainer_dashboard' %}" class="navbar-brand">LIFT LOG</a>
                 <div class="navbar-right">
                     <a href="{% url 'trainer_schedule' %}" class="text-white">Schedule</a>
                     <a href="{% url 'trainer_clients' %}" class="text-white">Clients</a>
@@ -131,19 +128,19 @@
                                 </span>
                             </h4>
                             <div class="appointment-meta">
-                                👤 {{ appointment.age }} years old, {{ appointment.gender }}
+                                {{ appointment.age }} years old, {{ appointment.gender }}
                             </div>
                             <div class="appointment-meta">
-                                📧 {{ appointment.member_email }}
+                                {{ appointment.member_email }}
                             </div>
                             <div class="appointment-meta">
-                                📅 {{ appointment.start_time|date:"F d, Y" }} at {{ appointment.start_time|time:"g:i A" }}
+                                {{ appointment.start_time|date:"F d, Y" }} at {{ appointment.start_time|time:"g:i A" }}
                             </div>
                             <div class="appointment-meta">
-                                ⏱️ {{ appointment.start_time|time:"g:i A" }} - {{ appointment.end_time|time:"g:i A" }}
+                                {{ appointment.start_time|time:"g:i A" }} - {{ appointment.end_time|time:"g:i A" }}
                             </div>
                             <div class="appointment-meta">
-                                📍 {{ appointment.gym_name }}
+                                {{ appointment.gym_name }}
                             </div>
                             {% if appointment.time_status != '-' %}
                             <div class="appointment-meta" style="color: #f5576c; font-weight: 600;">

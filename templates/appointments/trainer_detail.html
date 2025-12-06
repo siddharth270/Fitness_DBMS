@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trainer Profile - Gym Management System</title>
+    <title>Trainer Profile - LIFT LOG</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
     <style>
         .trainer-profile-header {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: #f093fb;
             color: white;
             padding: 40px;
             border-radius: 12px;
@@ -54,7 +54,7 @@
     <nav class="navbar navbar-member">
         <div class="container">
             <div class="navbar-content">
-                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand">LIFT LOG</a>
                 <div class="navbar-right">
                     <a href="{% url 'appointment_list' %}" class="text-white">My Appointments</a>
                     <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
@@ -75,17 +75,16 @@
 
         <!-- Trainer Profile Header -->
         <div class="trainer-profile-header">
-            <div class="trainer-avatar">🏋️</div>
             <h1 style="margin-bottom: 8px;">{{ trainer.name }}</h1>
             <p style="font-size: 18px; opacity: 0.95; margin-bottom: 24px;">{{ trainer.specialization }}</p>
             
             <div class="info-grid">
                 <div class="info-item">
-                    <div class="info-label">📧 Email</div>
+                    <div class="info-label">Email</div>
                     <div class="info-value" style="font-size: 16px;">{{ trainer.email }}</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">📍 Location</div>
+                    <div class="info-label">Location</div>
                     <div class="info-value" style="font-size: 16px;">{{ trainer.gym.gym_name }}</div>
                 </div>
             </div>
@@ -99,7 +98,7 @@
             
             {% for appointment in upcoming_appointments %}
             <div class="time-slot">
-                🕐 {{ appointment.start_time|date:"F d, Y" }} at {{ appointment.start_time|time:"g:i A" }} - {{ appointment.end_time|time:"g:i A" }}
+                {{ appointment.start_time|date:"F d, Y" }} at {{ appointment.start_time|time:"g:i A" }} - {{ appointment.end_time|time:"g:i A" }}
                 <span style="color: #dc3545; font-weight: 600; margin-left: 8px;">Booked</span>
             </div>
             {% endfor %}

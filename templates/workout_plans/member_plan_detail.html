@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ plan.plan_name }} - Gym Management System</title>
+    <title>{{ plan.plan_name }} - LIFT LOG</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
     <style>
         .plan-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             padding: 32px;
             border-radius: 12px;
@@ -58,7 +58,7 @@
     <nav class="navbar navbar-member">
         <div class="container">
             <div class="navbar-content">
-                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand">LIFT LOG</a>
                 <div class="navbar-right">
                     <a href="{% url 'member_plan_list' %}" class="text-white">My Plans</a>
                     <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">Logout</a>
@@ -108,7 +108,7 @@
                         <div style="flex: 1;">
                             <h4 style="margin: 0 0 8px 0;">{{ exercise.exercise_name }}</h4>
                             <div style="font-size: 14px; color: #666; margin-bottom: 12px;">
-                                📁 {{ exercise.category }} • 💪 {{ exercise.muscle_group }}
+                                📁 {{ exercise.category }} •  {{ exercise.muscle_group }}
                             </div>
                             <div>
                                 <span class="target-badge">{{ exercise.formatted_target }}</span>

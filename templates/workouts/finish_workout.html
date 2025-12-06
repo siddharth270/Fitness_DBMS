@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finish Workout - Gym Management System</title>
+    <title>Finish Workout - LIFT LOG</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
@@ -31,7 +31,7 @@
             font-size: 16px;
         }
         .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             border-radius: 16px;
             padding: 24px;
             margin-bottom: 24px;
@@ -111,11 +111,7 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .preset-btn:hover, .preset-btn.active {
-            border-color: #667eea;
-            background: #667eea;
-            color: white;
-        }
+
         .button-group {
             display: flex;
             gap: 12px;
@@ -133,10 +129,7 @@
             text-align: center;
             text-decoration: none;
         }
-        .btn-back:hover {
-            border-color: #667eea;
-            color: #667eea;
-        }
+
         .btn-finish {
             flex: 2;
             padding: 14px;
@@ -148,16 +141,14 @@
             font-weight: 600;
             cursor: pointer;
         }
-        .btn-finish:hover {
-            background: #218838;
-        }
+
     </style>
 </head>
 <body class="dashboard">
     <nav class="navbar navbar-member">
         <div class="container">
             <div class="navbar-content">
-                <a href="{% url 'member_dashboard' %}" class="navbar-brand">💪 Gym Management System</a>
+                <a href="{% url 'member_dashboard' %}" class="navbar-brand"> LIFT LOG</a>
             </div>
         </div>
     </nav>
