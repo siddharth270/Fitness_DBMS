@@ -20,40 +20,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
-DELIMITER $$
-CREATE PROCEDURE update_workout_completion(
-    IN p_workout_id INT,
-    IN p_duration INT,
-    IN p_calories INT
-)
-BEGIN
-    UPDATE Workout
-    SET duration = p_duration, 
-        calories_burned = p_calories
-    WHERE workout_id = p_workout_id;
-    
-    SELECT 'Workout completed successfully' AS message;
-END $$
-DELIMITER ;
-
-DELIMITER $$
-CREATE PROCEDURE get_workout_exercises(
-    IN p_workout_id INT
-)
-BEGIN
-    SELECT 
-        e.exercise_id,
-        e.exercise_name AS name,
-        COUNT(s.set_id) AS set_count
-    FROM `Set` s
-    JOIN Exercise e ON s.exercise_id = e.exercise_id
-    WHERE s.workout_id = p_workout_id
-    GROUP BY e.exercise_id, e.exercise_name
-    ORDER BY e.exercise_name;
-END $$
-DELIMITER ;
-
 DELIMITER $$
 CREATE PROCEDURE get_member_upcoming_appointments_count(
     IN p_member_id INT
@@ -225,30 +191,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- 3. Update a set
-DELIMITER $$
-CREATE PROCEDURE update_set_in_workout(
-    IN p_set_id INT,
-    IN p_workout_id INT,
-    IN p_reps INT,
-    IN p_weight DECIMAL(5,2)
-)
-BEGIN
-    DECLARE v_updated INT DEFAULT 0;
-    
-    UPDATE `Set`
-    SET no_of_reps = p_reps, weight = p_weight
-    WHERE set_id = p_set_id AND workout_id = p_workout_id;
-    
-    SET v_updated = ROW_COUNT();
-    
-    IF v_updated > 0 THEN
-        SELECT 'UPDATE SUCCESS' AS result, p_set_id AS updated_set_id;
-    ELSE
-        SELECT 'UPDATE FAILED' AS result, 'Set not found or unauthorized' AS message;
-    END IF;
-END $$
-DELIMITER ;
 
 -- 4. Complete workout (update duration and calories)
 DELIMITER $$

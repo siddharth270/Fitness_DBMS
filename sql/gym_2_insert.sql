@@ -1,19 +1,8 @@
--- ============================================================================
--- COMPLETE GYM MANAGEMENT DATABASE - ALL INSERT STATEMENTS
--- Starting from scratch - all tables empty
--- ============================================================================
-
--- ============================================================================
--- 1. INSERT GYMS
--- ============================================================================
 INSERT INTO Gym (gym_name, location, contact_number, email) VALUES
 ('Marino Recreation Center', '369 Huntington Ave, Boston, MA 02215', '617-555-0000', 'marino@northeastern.edu'),
 ('Squashbusters Northeastern', '795 Columbus Ave, Boston, MA 02120', '617-555-1111', 'squashbusters@northeastern.edu'),
 ('Husky Athletics', '102 Huntington Ave, Boston, MA 02115', '617-555-2222', 'husky@northeastern.edu');
 
--- ============================================================================
--- 2. INSERT TRAINERS
--- ============================================================================
 INSERT INTO Trainer (gym_id, name, email, password, specialization) VALUES
 (1, 'Mike Johnson', 'mike.j@marino.com', 'password123', 'Strength Training'),
 (1, 'Sarah Chen', 'sarah.c@marino.com', 'password123', 'Cardio'),
@@ -25,9 +14,6 @@ INSERT INTO Trainer (gym_id, name, email, password, specialization) VALUES
 (3, 'Amanda Lee', 'amanda.l@husky.com', 'password123', 'Calisthenics'),
 (3, 'Ryan Garcia', 'ryan.g@husky.com', 'password123', 'Pilates');
 
--- ============================================================================
--- 3. INSERT MEMBERS
--- ============================================================================
 INSERT INTO `Member` (name, email, password, age, gender, height, weight, join_date) VALUES
 ('John Smith', 'john.smith@email.com', 'password123', 28, 'Male', 180.5, 82.3, '2024-01-15'),
 ('Emma Davis', 'emma.davis@email.com', 'password123', 25, 'Female', 165.0, 58.5, '2024-02-01'),
@@ -60,9 +46,6 @@ INSERT INTO `Member` (name, email, password, age, gender, height, weight, join_d
 ('Liam Campbell', 'liam.camp@email.com', 'password123', 34, 'Male', 181.5, 89.5, '2024-01-14'),
 ('Aria Parker', 'aria.parker@email.com', 'password123', 24, 'Female', 166.5, 58.5, '2024-03-20');
 
--- ============================================================================
--- 4. INSERT MEMBERSHIPS
--- ============================================================================
 INSERT INTO Membership (member_id, gym_id, start_date, end_date, status, cost) VALUES
 (1, 1, '2024-01-15', '2025-01-15', 'Active', 599.99),
 (2, 1, '2024-02-01', '2025-02-01', 'Active', 599.99),
@@ -95,11 +78,15 @@ INSERT INTO Membership (member_id, gym_id, start_date, end_date, status, cost) V
 (29, 3, '2024-01-14', '2024-12-14', 'Expired', 749.99),
 (30, 3, '2024-03-20', '2025-03-20', 'Active', 749.99);
 
--- ============================================================================
--- 5. INSERT EXERCISES FROM EXCEL FILE
--- ============================================================================
-
 INSERT INTO Exercise (exercise_name, category, target_muscle_group) VALUES
+('Treadmill Running', 'Cardio', 'Full Body'),
+('Stationary Bike', 'Cardio', 'Legs'),
+('Elliptical', 'Cardio', 'Full Body'),
+('Bodyweight Squat', 'Bodyweight', 'Legs'),
+('Dips', 'Bodyweight', 'Triceps'),
+('Standard Push-up', 'Bodyweight', 'Chest'),
+('Standard Plank', 'Core', 'Core'),
+('Standard Crunch', 'Core', 'Abdominals'), 
 ('Dumbbell Crush Grip Otis Up', 'Strength', 'Abdominals'),
 ('Single Arm Dumbbell Side Plank Reach Through', 'Strength', 'Abdominals'),
 ('Ab Wheel Kneeling Rollout', 'Core', 'Abdominals'),
@@ -2143,20 +2130,6 @@ INSERT INTO Exercise (exercise_name, category, target_muscle_group) VALUES
 ('Cable Straight Bar Reverse Grip Front Raise', 'Cable', 'Shoulders'),
 ('EZ Bar Reverse Grip Front Raise', 'Strength', 'Shoulders');
 
--- Add missing cardio/bodyweight exercises
-INSERT INTO Exercise (exercise_name, category, target_muscle_group) VALUES
-('Treadmill Running', 'Cardio', 'Full Body'),
-('Stationary Bike', 'Cardio', 'Legs'),
-('Elliptical', 'Cardio', 'Full Body'),
-('Bodyweight Squat', 'Bodyweight', 'Legs'),
-('Dips', 'Bodyweight', 'Triceps'),
-('Standard Push-up', 'Bodyweight', 'Chest'),
-('Standard Plank', 'Core', 'Core'),
-('Standard Crunch', 'Core', 'Abdominals');
-
--- ============================================================================
--- 6. INSERT APPOINTMENTS
--- ============================================================================
 INSERT INTO Appointment (trainer_id, member_id, start_time, end_time, status) VALUES
 (1, 1, '2025-11-15 10:00:00', '2025-11-15 11:00:00', 'Completed'),
 (1, 3, '2025-11-20 14:00:00', '2025-11-20 15:00:00', 'Completed'),
@@ -2180,9 +2153,6 @@ INSERT INTO Appointment (trainer_id, member_id, start_time, end_time, status) VA
 (9, 26, '2025-11-23 14:00:00', '2025-11-23 15:00:00', 'Completed'),
 (9, 28, '2025-12-09 11:00:00', '2025-12-09 12:00:00', 'Scheduled');
 
--- ============================================================================
--- 7. INSERT WORKOUT PLANS
--- ============================================================================
 INSERT INTO Workout_Plan (trainer_id, member_id, plan_name) VALUES
 (1, 1, 'Strength Building Program'),
 (1, 3, 'Powerlifting Foundation'),
@@ -2204,110 +2174,103 @@ INSERT INTO Workout_Plan (trainer_id, member_id, plan_name) VALUES
 (9, 26, 'Pilates Core Strength'),
 (9, 28, 'Functional Mobility');
 
--- ============================================================================
--- 8. INSERT PLAN EXERCISES
--- Using NEW exercise IDs from above
--- ============================================================================
 INSERT INTO Plan_Exercise (plan_id, exercise_id, target_sets, target_reps, target_weight) VALUES
 -- Plan 1: Strength Building Program
-(1, 1, 4, 8, 80.0),   -- Barbell Bench Press
-(1, 2, 4, 6, 100.0),  -- Barbell Back Squat
-(1, 3, 3, 5, 120.0),  -- Barbell Conventional Deadlift
-(1, 5, 3, 8, 70.0),   -- Barbell Bent Over Row
+(1, 1, 4, 8, 80.0),   
+(1, 2, 4, 6, 100.0),  
+(1, 3, 3, 5, 120.0),  
+(1, 5, 3, 8, 70.0),   
 -- Plan 2: Powerlifting Foundation
-(2, 2, 5, 5, 110.0),  -- Barbell Back Squat
-(2, 3, 5, 3, 140.0),  -- Barbell Conventional Deadlift
-(2, 1, 5, 5, 90.0),   -- Barbell Bench Press
-(2, 4, 4, 6, 50.0),   -- Barbell Overhead Press
+(2, 2, 5, 5, 110.0),  
+(2, 3, 5, 3, 140.0),  
+(2, 1, 5, 5, 90.0),   
+(2, 4, 4, 6, 50.0),   
 -- Plan 3: Upper Body Focus
-(3, 1, 4, 10, 70.0),  -- Barbell Bench Press
-(3, 6, 3, 10, 60.0),  -- Barbell Incline Bench Press
-(3, 10, 3, 12, 0.0),  -- Bar Pull Up
-(3, 12, 3, 12, 15.0), -- EZ Bar Bicep Curl
+(3, 1, 4, 10, 70.0),  
+(3, 6, 3, 10, 60.0),  
+(3, 10, 3, 12, 0.0),  
+(3, 12, 3, 12, 15.0), 
 -- Plan 4: Cardio Endurance Plan
-(4, 21, 1, 30, 0.0),  -- Treadmill Running
-(4, 22, 1, 20, 0.0),  -- Stationary Bike
-(4, 8, 1, 15, 0.0),   -- Cable Seated Row
-(4, 23, 1, 25, 0.0),  -- Elliptical
+(4, 21, 1, 30, 0.0),  
+(4, 22, 1, 20, 0.0),  
+(4, 8, 1, 15, 0.0),   
+(4, 23, 1, 25, 0.0),  
 -- Plan 5: Fat Loss Program
-(5, 21, 1, 25, 0.0),  -- Treadmill Running
-(5, 9, 1, 20, 0.0),   -- Barbell Step Up
-(5, 26, 3, 20, 0.0),  -- Standard Push-up
-(5, 24, 3, 15, 0.0),  -- Bodyweight Squat
+(5, 21, 1, 25, 0.0),  
+(5, 9, 1, 20, 0.0),   
+(5, 26, 3, 20, 0.0),  
+(5, 24, 3, 15, 0.0),  
 -- Plan 6: Flexibility and Balance
-(6, 27, 3, 60, 0.0),  -- Plank Hold
-(6, 11, 3, 15, 0.0),  -- Dumbbell Forward Lunge
-(6, 24, 3, 20, 0.0),  -- Bodyweight Squat
-(6, 26, 3, 15, 0.0),  -- Standard Push-up
+(6, 27, 3, 60, 0.0),  
+(6, 11, 3, 15, 0.0),  
+(6, 24, 3, 20, 0.0),  
+(6, 26, 3, 15, 0.0),  
 -- Plan 7: Yoga Strength Fusion
-(7, 27, 3, 45, 0.0),  -- Plank Hold
-(7, 11, 3, 12, 0.0),  -- Dumbbell Forward Lunge
-(7, 10, 2, 8, 0.0),   -- Bar Pull Up
-(7, 26, 3, 15, 0.0),  -- Standard Push-up
+(7, 27, 3, 45, 0.0),  
+(7, 11, 3, 12, 0.0),  
+(7, 10, 2, 8, 0.0),   
+(7, 26, 3, 15, 0.0),  
 -- Plan 8: Advanced Powerlifting
-(8, 2, 6, 3, 150.0),  -- Barbell Back Squat
-(8, 3, 6, 2, 180.0),  -- Barbell Conventional Deadlift
-(8, 1, 6, 3, 110.0),  -- Barbell Bench Press
-(8, 7, 4, 5, 100.0),  -- Barbell Romanian Deadlift
+(8, 2, 6, 3, 150.0),  
+(8, 3, 6, 2, 180.0),  
+(8, 1, 6, 3, 110.0),  
+(8, 7, 4, 5, 100.0),  
 -- Plan 9: Deadlift Specialization
-(9, 3, 6, 5, 160.0),  -- Barbell Conventional Deadlift
-(9, 7, 4, 8, 90.0),   -- Barbell Romanian Deadlift
-(9, 5, 4, 6, 80.0),   -- Barbell Bent Over Row
-(9, 14, 3, 10, 40.0), -- Cable Hamstring Curl
+(9, 3, 6, 5, 160.0),  
+(9, 7, 4, 8, 90.0),   
+(9, 5, 4, 6, 80.0),   
+(9, 14, 3, 10, 40.0), 
 -- Plan 10: CrossFit Fundamentals
-(10, 2, 5, 10, 90.0),  -- Barbell Back Squat
-(10, 10, 5, 10, 0.0),  -- Bar Pull Up
-(10, 26, 5, 20, 0.0),  -- Standard Push-up
-(10, 8, 1, 15, 0.0),   -- Cable Seated Row
+(10, 2, 5, 10, 90.0), 
+(10, 10, 5, 10, 0.0), 
+(10, 26, 5, 20, 0.0), 
+(10, 8, 1, 15, 0.0),  
 -- Plan 11: MetCon Mastery
-(11, 24, 5, 20, 0.0),  -- Bodyweight Squat
-(11, 26, 5, 15, 0.0),  -- Standard Push-up
-(11, 9, 1, 15, 0.0),   -- Barbell Step Up
-(11, 22, 1, 10, 0.0),  -- Stationary Bike
+(11, 24, 5, 20, 0.0), 
+(11, 26, 5, 15, 0.0), 
+(11, 9, 1, 15, 0.0),  
+(11, 22, 1, 10, 0.0), 
 -- Plan 12: HIIT Fat Burner
-(12, 21, 8, 2, 0.0),   -- Treadmill Running (intervals)
-(12, 26, 4, 20, 0.0),  -- Standard Push-up
-(12, 24, 4, 25, 0.0),  -- Bodyweight Squat
-(12, 11, 4, 20, 0.0),  -- Dumbbell Forward Lunge
+(12, 21, 8, 2, 0.0),  
+(12, 26, 4, 20, 0.0), 
+(12, 24, 4, 25, 0.0), 
+(12, 11, 4, 20, 0.0), 
 -- Plan 13: Interval Training Pro
-(13, 9, 10, 2, 0.0),   -- Barbell Step Up
-(13, 25, 5, 15, 0.0),  -- Bodyweight Dips
-(13, 10, 5, 10, 0.0),  -- Bar Pull Up
-(13, 22, 1, 15, 0.0),  -- Stationary Bike
+(13, 9, 10, 2, 0.0),  
+(13, 25, 5, 15, 0.0), 
+(13, 10, 5, 10, 0.0), 
+(13, 22, 1, 15, 0.0), 
 -- Plan 14: Boxing Conditioning
-(14, 21, 1, 20, 0.0),  -- Treadmill Running
-(14, 26, 5, 20, 0.0),  -- Standard Push-up
-(14, 27, 3, 60, 0.0),  -- Plank Hold
-(14, 18, 3, 20, 0.0),  -- Kettlebell Russian Twist
+(14, 21, 1, 20, 0.0), 
+(14, 26, 5, 20, 0.0), 
+(14, 27, 3, 60, 0.0), 
+(14, 18, 3, 20, 0.0), 
 -- Plan 15: Fighter Strength
-(15, 3, 4, 5, 130.0),  -- Barbell Conventional Deadlift
-(15, 10, 4, 10, 0.0),  -- Bar Pull Up
-(15, 25, 4, 12, 0.0),  -- Bodyweight Dips
-(15, 28, 4, 20, 0.0),  -- Standard Crunch
+(15, 3, 4, 5, 130.0), 
+(15, 10, 4, 10, 0.0), 
+(15, 25, 4, 12, 0.0), 
+(15, 28, 4, 20, 0.0), 
 -- Plan 16: Calisthenics Progression
-(16, 10, 5, 8, 0.0),   -- Bar Pull Up
-(16, 26, 5, 20, 0.0),  -- Standard Push-up
-(16, 25, 4, 12, 0.0),  -- Bodyweight Dips
-(16, 24, 4, 25, 0.0),  -- Bodyweight Squat
+(16, 10, 5, 8, 0.0),  
+(16, 26, 5, 20, 0.0), 
+(16, 25, 4, 12, 0.0), 
+(16, 24, 4, 25, 0.0), 
 -- Plan 17: Bodyweight Master
-(17, 10, 6, 12, 0.0),  -- Bar Pull Up
-(17, 25, 5, 15, 0.0),  -- Bodyweight Dips
-(17, 11, 4, 20, 0.0),  -- Dumbbell Forward Lunge
-(17, 19, 3, 15, 0.0),  -- Bar Hanging Leg Raise
+(17, 10, 6, 12, 0.0), 
+(17, 25, 5, 15, 0.0), 
+(17, 11, 4, 20, 0.0), 
+(17, 19, 3, 15, 0.0), 
 -- Plan 18: Pilates Core Strength
-(18, 27, 4, 60, 0.0),  -- Plank Hold
-(18, 28, 4, 25, 0.0),  -- Standard Crunch
-(18, 18, 4, 20, 0.0),  -- Kettlebell Russian Twist
-(18, 11, 3, 15, 0.0),  -- Dumbbell Forward Lunge
+(18, 27, 4, 60, 0.0), 
+(18, 28, 4, 25, 0.0), 
+(18, 18, 4, 20, 0.0), 
+(18, 11, 3, 15, 0.0), 
 -- Plan 19: Functional Mobility
-(19, 24, 3, 20, 0.0),  -- Bodyweight Squat
-(19, 11, 3, 15, 0.0),  -- Dumbbell Forward Lunge
-(19, 27, 3, 45, 0.0),  -- Plank Hold
-(19, 26, 3, 15, 0.0);  -- Standard Push-up
+(19, 24, 3, 20, 0.0), 
+(19, 11, 3, 15, 0.0), 
+(19, 27, 3, 45, 0.0), 
+(19, 26, 3, 15, 0.0); 
 
--- ============================================================================
--- 9. INSERT WORKOUTS
--- ============================================================================
 INSERT INTO Workout (member_id, gym_id, plan_id, date, duration, calories_burned) VALUES
 (1, 1, 1, '2024-11-16', 65, 450),
 (1, 1, 1, '2024-11-18', 70, 480),
@@ -2340,100 +2303,66 @@ INSERT INTO Workout (member_id, gym_id, plan_id, date, duration, calories_burned
 (27, 3, NULL, '2024-11-26', 55, 410),
 (28, 3, 19, '2024-11-27', 50, 340);
 
--- ============================================================================
--- 10. INSERT SETS
--- Using NEW exercise IDs from Exercise table
--- ============================================================================
 INSERT INTO `Set` (workout_id, exercise_id, no_of_reps, weight) VALUES
--- Workout 1: Member 1, Plan 1 exercises
 (1, 1, 8, 80.0), (1, 1, 8, 80.0), (1, 1, 7, 80.0), (1, 1, 6, 80.0),
 (1, 2, 6, 100.0), (1, 2, 6, 100.0), (1, 2, 5, 100.0), (1, 2, 5, 100.0),
 (1, 3, 5, 120.0), (1, 3, 5, 120.0), (1, 3, 4, 120.0),
--- Workout 2: Member 1, Plan 1 exercises
 (2, 1, 8, 82.5), (2, 1, 8, 82.5), (2, 1, 8, 82.5), (2, 1, 7, 82.5),
 (2, 2, 6, 102.5), (2, 2, 6, 102.5), (2, 2, 6, 102.5), (2, 2, 5, 102.5),
 (2, 5, 8, 70.0), (2, 5, 8, 70.0), (2, 5, 7, 70.0),
--- Workout 3: Member 1, free workout
 (3, 12, 12, 20.0), (3, 12, 12, 20.0), (3, 12, 10, 20.0),
 (3, 13, 12, 25.0), (3, 13, 12, 25.0), (3, 13, 10, 25.0),
--- Workout 4: Member 2, Cardio plan
 (4, 21, 30, 0.0), (4, 22, 20, 0.0), (4, 23, 25, 0.0),
--- Workout 5: Member 2, Cardio plan
 (5, 21, 25, 0.0), (5, 8, 15, 0.0), (5, 9, 20, 0.0),
--- Workout 6: Member 3, Powerlifting
 (6, 2, 5, 110.0), (6, 2, 5, 110.0), (6, 2, 5, 110.0), (6, 2, 4, 110.0), (6, 2, 4, 110.0),
 (6, 3, 3, 140.0), (6, 3, 3, 140.0), (6, 3, 3, 140.0), (6, 3, 2, 140.0), (6, 3, 2, 140.0),
--- Workout 7: Member 3, Powerlifting
 (7, 1, 5, 90.0), (7, 1, 5, 90.0), (7, 1, 5, 90.0), (7, 1, 4, 90.0), (7, 1, 4, 90.0),
 (7, 4, 6, 50.0), (7, 4, 6, 50.0), (7, 4, 5, 50.0), (7, 4, 5, 50.0),
--- Workout 8: Member 4, Fat Loss
 (8, 21, 25, 0.0), (8, 9, 20, 0.0),
 (8, 26, 20, 0.0), (8, 26, 18, 0.0), (8, 26, 15, 0.0),
--- Workout 9: Member 5, Upper Body
 (9, 1, 10, 70.0), (9, 1, 10, 70.0), (9, 1, 9, 70.0), (9, 1, 8, 70.0),
 (9, 10, 12, 0.0), (9, 10, 10, 0.0), (9, 10, 8, 0.0),
--- Workout 10: Member 6, Flexibility
 (10, 27, 60, 0.0), (10, 27, 55, 0.0), (10, 27, 50, 0.0),
 (10, 11, 15, 0.0), (10, 11, 15, 0.0), (10, 11, 12, 0.0),
--- Workout 11: Member 11, Advanced Powerlifting
 (11, 2, 3, 150.0), (11, 2, 3, 150.0), (11, 2, 3, 150.0), (11, 2, 2, 150.0), (11, 2, 2, 150.0), (11, 2, 2, 150.0),
 (11, 3, 2, 180.0), (11, 3, 2, 180.0), (11, 3, 2, 180.0), (11, 3, 1, 180.0),
--- Workout 12: Member 11
 (12, 1, 3, 110.0), (12, 1, 3, 110.0), (12, 1, 3, 110.0), (12, 1, 2, 110.0), (12, 1, 2, 110.0), (12, 1, 2, 110.0),
 (12, 7, 5, 100.0), (12, 7, 5, 100.0), (12, 7, 4, 100.0), (12, 7, 4, 100.0),
--- Workout 13: Member 12, CrossFit
 (13, 2, 10, 90.0), (13, 2, 10, 90.0), (13, 2, 9, 90.0), (13, 2, 8, 90.0), (13, 2, 8, 90.0),
 (13, 10, 10, 0.0), (13, 10, 9, 0.0), (13, 10, 8, 0.0), (13, 10, 7, 0.0), (13, 10, 6, 0.0),
--- Workout 14: Member 12
 (14, 26, 20, 0.0), (14, 26, 20, 0.0), (14, 26, 18, 0.0), (14, 26, 16, 0.0), (14, 26, 15, 0.0),
 (14, 8, 15, 0.0),
--- Workout 15: Member 13, Deadlift Specialization
 (15, 3, 5, 160.0), (15, 3, 5, 160.0), (15, 3, 5, 160.0), (15, 3, 4, 160.0), (15, 3, 4, 160.0), (15, 3, 3, 160.0),
 (15, 7, 8, 90.0), (15, 7, 8, 90.0), (15, 7, 7, 90.0), (15, 7, 6, 90.0),
--- Workout 16: Member 14, MetCon
 (16, 24, 20, 0.0), (16, 24, 20, 0.0), (16, 24, 20, 0.0), (16, 24, 18, 0.0), (16, 24, 16, 0.0),
 (16, 26, 15, 0.0), (16, 26, 15, 0.0), (16, 26, 12, 0.0), (16, 26, 10, 0.0), (16, 26, 10, 0.0),
--- Workout 17: Member 15, free workout
 (17, 15, 10, 120.0), (17, 15, 10, 120.0), (17, 15, 10, 120.0),
 (17, 15, 12, 35.0), (17, 15, 12, 35.0), (17, 15, 10, 35.0),
--- Workout 18: Member 16, HIIT
 (18, 21, 2, 0.0), (18, 21, 2, 0.0), (18, 21, 2, 0.0), (18, 21, 2, 0.0),
 (18, 26, 20, 0.0), (18, 26, 18, 0.0), (18, 26, 16, 0.0), (18, 26, 14, 0.0),
--- Workout 19: Member 17, free workout
 (19, 1, 8, 75.0), (19, 1, 8, 75.0), (19, 1, 7, 75.0),
 (19, 2, 10, 85.0), (19, 2, 10, 85.0), (19, 2, 9, 85.0),
--- Workout 20: Member 18, Interval Training
 (20, 9, 2, 0.0), (20, 9, 2, 0.0), (20, 9, 2, 0.0),
 (20, 25, 15, 0.0), (20, 25, 14, 0.0), (20, 25, 12, 0.0),
 (20, 10, 10, 0.0), (20, 10, 8, 0.0), (20, 10, 7, 0.0),
--- Workout 21: Member 21, Boxing
 (21, 21, 20, 0.0),
 (21, 26, 20, 0.0), (21, 26, 20, 0.0), (21, 26, 18, 0.0), (21, 26, 16, 0.0), (21, 26, 15, 0.0),
 (21, 27, 60, 0.0), (21, 27, 55, 0.0), (21, 27, 50, 0.0),
--- Workout 22: Member 21
 (22, 18, 20, 0.0), (22, 18, 20, 0.0), (22, 18, 18, 0.0),
 (22, 26, 20, 0.0), (22, 26, 18, 0.0), (22, 26, 16, 0.0),
--- Workout 23: Member 22, Calisthenics
 (23, 10, 8, 0.0), (23, 10, 8, 0.0), (23, 10, 7, 0.0), (23, 10, 6, 0.0), (23, 10, 6, 0.0),
 (23, 26, 20, 0.0), (23, 26, 20, 0.0), (23, 26, 18, 0.0), (23, 26, 16, 0.0), (23, 26, 15, 0.0),
--- Workout 24: Member 22
 (24, 25, 12, 0.0), (24, 25, 12, 0.0), (24, 25, 10, 0.0), (24, 25, 9, 0.0),
 (24, 24, 25, 0.0), (24, 24, 25, 0.0), (24, 24, 22, 0.0), (24, 24, 20, 0.0),
--- Workout 25: Member 23, Fighter Strength
 (25, 3, 5, 130.0), (25, 3, 5, 130.0), (25, 3, 5, 130.0), (25, 3, 4, 130.0),
 (25, 10, 10, 0.0), (25, 10, 9, 0.0), (25, 10, 8, 0.0), (25, 10, 7, 0.0),
--- Workout 26: Member 24, Bodyweight Master
 (26, 10, 12, 0.0), (26, 10, 11, 0.0), (26, 10, 10, 0.0),
 (26, 25, 15, 0.0), (26, 25, 14, 0.0), (26, 25, 12, 0.0),
--- Workout 27: Member 25, free workout
 (27, 2, 8, 95.0), (27, 2, 8, 95.0), (27, 2, 7, 95.0),
 (27, 15, 12, 140.0), (27, 15, 12, 140.0), (27, 15, 10, 140.0),
--- Workout 28: Member 26, Pilates
 (28, 27, 60, 0.0), (28, 27, 60, 0.0), (28, 27, 55, 0.0), (28, 27, 50, 0.0),
 (28, 28, 25, 0.0), (28, 28, 25, 0.0), (28, 28, 22, 0.0), (28, 28, 20, 0.0),
--- Workout 29: Member 27, free workout
 (29, 1, 10, 72.5), (29, 1, 10, 72.5), (29, 1, 9, 72.5),
 (29, 12, 12, 17.5), (29, 12, 12, 17.5), (29, 12, 10, 17.5),
--- Workout 30: Member 28, Functional Mobility
 (30, 24, 20, 0.0), (30, 24, 20, 0.0), (30, 24, 18, 0.0),
 (30, 11, 15, 0.0), (30, 11, 15, 0.0), (30, 11, 12, 0.0);
